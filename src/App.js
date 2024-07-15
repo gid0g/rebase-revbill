@@ -83,6 +83,8 @@ import ChangePassword from "./pages/user/onboarding/changePassword";
 import ViewOrganisation from "./pages/administration/organisations/view";
 import Modules from "./pages/moduleManagement/modules";
 import Module from "./pages/moduleManagement/index";
+import RoleManagemnt from"./pages/moduleManagement/roleManagement.js";
+import ViewModules from "./pages/moduleManagement/viewmodlues.js"
 import PaymentsHome from "./pages/payment/index";
 import OrganisationPaymentHistory from "./pages/payment/organisationPaymentHistory";
 import IndividualPaymentHistory from "./pages/payment/individualPaymentHistory";
@@ -340,6 +342,18 @@ const App = () => {
                     <Route path="menus" element={<Menus />} />
                   </Route>
                 )}
+{/* Admin Module management */}
+                    <Route
+                      path="viewmodules"
+                      element={<ViewModules />}
+                    />
+                    <Route
+                      path="roleManagement"
+                      element={<RoleManagemnt />}
+                    />
+
+                     
+
 
                 {/* Payments Routes and all children*/}
                 <Route path="payments" element={<PaymentsHome />}>

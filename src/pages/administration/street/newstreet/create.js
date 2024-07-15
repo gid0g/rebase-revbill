@@ -90,7 +90,7 @@ const CreateNewStreet = () => {
       enteredSpaceFloorIsValid &&
       enteredLocationAddressIsValid &&
       selectedSpaceIdentifierOption &&
-      selectedWardOption &&
+      // selectedWardOption &&
       selectedAgency
     ) {
       setValidateForm(false);
@@ -242,7 +242,7 @@ const CreateNewStreet = () => {
   
     const transformedAgencyData = agencies
       ? agencies.map((item) => ({
-          label: item.agencyName,
+          label: `${item.agencyName} / ${item.agencyCode}`,
           value: item.agencyId,
         }))
       : [];
@@ -330,14 +330,14 @@ const CreateNewStreet = () => {
                 <li className="breadcrumb-item active"> Street Name</li>
               </ol>
             </div>
-          <div className="d-flex flex-row-reverse">
+          {/* <div className="d-flex flex-row-reverse">
         <Link
           to="/home/administration/street/createnewstreet/bulkstreetupload"
           className="btn bg-blue-900 shadow-md text-white px-4"
         >
           Bulk Street Upload
         </Link>
-      </div>
+      </div> */}
           <div className="mt-5">
             <form>
               <fieldset>

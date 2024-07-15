@@ -44,8 +44,11 @@ const DebtManagement = () => {
   const [loading, setLoading] = useState(false);
   const appSettings = useContext(AppSettings);
   const userData = appSettings.userData;
+  const [revenuetype, setRevenuetype]=useState("")
+  const [payerID, setpayerId]=useState("")
   const [payerTypeId, setPayerTypeId] = useState(null);
   const [allRevenue, setAllRevenue] = useState("");
+  const [agencyOpt,setAgencyopt]= useState("")
   const [state, setState] = useState([]);
   const [selectedState, setSelectedState] = useState("");
   const [lgas, setLgas] = useState([]);
@@ -65,10 +68,60 @@ const DebtManagement = () => {
   const [data, setData] = useState([]);
   const [billData, setBillData] = useState([]);
   const [billDataInfo, setBillDataInfo] = useState([]);
+  const [search, setSearch]=useState([])
   const { agencies } = useContext(Context);
+  const [startDate, setStartdate] = useState(() => {
+    const now = new Date();
+    return now.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:MM'
+  });
+  const [endDate, setEnddte] = useState(() => {
+    const now = new Date();
+    return now.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:MM'
+  });
+  const[startformat, setStartformat]= useState("")
+  const[endformat, setEndformat]= useState("")
 
+///////////////////////////////
+const formatDateTime = (dateTimeLocal) => {
+  const date = new Date(dateTimeLocal);
+  
+  const pad = (num) => String(num).padStart(2, '0');
 
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1); // Months are 0-indexed
+  const year = date.getFullYear();
 
+  let hours = date.getHours();
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // The hour '0' should be '12'
+  const formattedHours = pad(hours);
+
+  return `${month}/${day}/${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
+};
+const handleStartChange = (event) => {
+  console.log("start", event.target.value)
+  setStartdate(event.target.value);
+  setStartformat(formatDateTime(event.target.value))
+};
+const handleEndChange = (event) => {
+  console.log("End", event.target.value)
+  setEnddte(event.target.value);
+  setEndformat(formatDateTime(event.target.value))
+};
+
+const MakePayerid=(event)=>{
+  console.log("payer",event.target.value)
+  setpayerId(event.target.value)
+}
+useEffect(()=>{
+  console.log("starter", startformat)
+  console.log("ender", endformat)
+},[startformat, endformat])
+//////////////////////////////
   const columns = [
     {
       name: "S/N",
@@ -176,6 +229,25 @@ const DebtManagement = () => {
   );
 
   const reversedFilteredItems = [...filteredItems].reverse();
+  const filteredItems1 = search.map((originalObject)=>{
+    const convertedObject = {
+      customersFullName: originalObject.customers.fullName,
+      harmonizedBillReferenceNo: originalObject.harmonizedBillReferenceNo,
+      agencyName: originalObject.agencies.agencyName,
+      propertyBuildingName: originalObject.property.buildingName,
+      totalBillArrears: originalObject.billArrears,
+      totalAmountPaid: originalObject.amountPaid,
+    };
+    return convertedObject
+  })
+
+  const reversedFilteredItems1 = [...filteredItems1].reverse();
+  useEffect(()=>{
+    console.log("filteredItems", filteredItems)
+    console.log("reversedFilteredItems", reversedFilteredItems)
+    console.log("filteredItems1", filteredItems1)
+    console.log("reversedFilteredItems1", reversedFilteredItems1)
+  },[filteredItems,reversedFilteredItems,filteredItems1,reversedFilteredItems1])
   
   const subHeaderComponentMemo = React.useMemo(() => {
     const handleClear = () => {
@@ -469,12 +541,18 @@ const DebtManagement = () => {
     value: "",
   });
 
-  //************* *************/
-
+  //************* *************//
+  const handlerevenuetype=(revenuetype)=>{
+    console.log("revenue", revenuetype.value)
+    setRevenuetype(revenuetype.value)
+  }
   const handlePayerType = (selectedPayerType) => {
     setPayerTypeId(selectedPayerType.value);
   };
-  const handleAgencyChange = (agencyOption) => {};
+  const handleAgencyChange = (agencyOption) => {
+    console.log("agencyopt",agencyOption.value)
+    setAgencyopt(agencyOption.value)
+  };
   const handleStateChange = (selectedState) => {
     const stateId = selectedState.value;
     setSelectedState(stateId);
@@ -549,20 +627,63 @@ const DebtManagement = () => {
 
 
   const handleFilterDebtManagement = async (e) => {
+    setLoading(true)
     e.preventDefault();
     console.log("PayerTypeId:", payerTypeId);
+    console.log("AgencyOpt:", agencyOpt);
+    console.log("payerID:", payerID);
+    console.log("revenuetype:", revenuetype);
     console.log("selectedState:", selectedState);
     console.log("selectedLcda:", selectedLcda);
     console.log("selectedLga:", selectedLga);
     // organisationId, payerId, payerTypeId, AreaOffice, Revenue, stateId, LcdaId, LgaId, StartDate, EndDate
 
     try{
-      const response = await api.get(`/billing/debt-filter-report/16?PayerId=&PayerTypeId&AreaOffice&Revenue&stateId=0&LcdaId=0&LgaId=0&StartDate=11/09/2023, 08:05:00 AM&EndDate=01/01/2024, 08:05:00 AM`)
+      const view= `billing/debt-filter-report/${organisationId}?PayerId=${payerID?payerID:""}&PayerTypeId=${payerTypeId? payerTypeId:""}&AreaOffice=${agencyOpt?agencyOpt:""}&Revenue=${revenuetype?revenuetype:""}&stateId=${selectedState? selectedState:""}&LcdaId=${selectedLcda? selectedLcda:""}&LgaId=${selectedLga? selectedLga:""}&StartDate=${startformat?startformat:""}&EndDate=${endformat?endformat:""}`
+      console.log("endpoit",view)
+      const response = await api.get(`billing/debt-filter-report/${organisationId}?PayerId=${payerID?payerID:""}&PayerTypeId=${payerTypeId? payerTypeId:""}&AreaOffice=${agencyOpt?agencyOpt:""}&Revenue=${revenuetype?revenuetype:""}&stateId=${selectedState? selectedState:""}&LcdaId=${selectedLcda? selectedLcda:""}&LgaId=${selectedLga? selectedLga:""}&StartDate=${startformat?startformat:""}&EndDate=${endformat?endformat:""}`)
+      console.log("res",response)
+      if(response.data.length!==0){
+        toast.success("Search found", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      }else{
+        toast.error("Search not found", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      }
+      setSearch(response.data)
     } catch(err) {
-
+      toast.error(`Error:${err.status}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
+    setLoading(false)
   }
-
+  useEffect(()=>{
+    console.log("search", search)
+  },[search])
   const checkStatus = (value) => {
     if(value && value == "Paid") {
       return "bg-green-500 text-white";
@@ -573,9 +694,24 @@ const DebtManagement = () => {
     }
   }
   
+  const Reset=()=>{
+    setPayerTypeId(null);
+    setAgencyopt("");
+    setpayerId("");
+    setRevenuetype("");
+    setSelectedState("");
+    setSelectedLcda("");
+    setSelectedLga("");
+    setStartformat("");
+    setEndformat("");
+    setStartdate("");
+    setEnddte("");
+  }
 
   return (
     <>
+    <ToastContainer />
+
       <div className="mb-2 pl-3 flex justify-content-between">
         <div className=" ">
           <h5 className=" mb-2">Debt Report</h5>
@@ -709,7 +845,9 @@ const DebtManagement = () => {
               <input
                 type="text"
                 className="form-control"
+                value={payerID}
                 placeholder="Enter Tax Payer ID"
+                onChange={MakePayerid}
               />
             </div>
             <div className="col-4">
@@ -744,10 +882,10 @@ const DebtManagement = () => {
                 name="category"
                 defaultValue={transformedRevenueData[0]}
                 options={transformedRevenueData}
-                onChange={handlePayerType}
+                onChange={handlerevenuetype}
               />
             </div>
-            <div className="col-4">
+            {/* <div className="col-4">
               <Select
                 id="category"
                 className="basic-single"
@@ -768,7 +906,7 @@ const DebtManagement = () => {
                 // options={payerType}
                 // onChange={handlePayerType}
               />
-            </div>
+            </div> */}
           </div>
           <div className="row ">
             <div className="col-4">
@@ -814,6 +952,8 @@ const DebtManagement = () => {
                   className="form-control"
                   placeholder="Enter Start Date"
                   name="start_date"
+                  value={startDate}
+                  onChange={handleStartChange}
                 />
               </div>
 
@@ -824,6 +964,8 @@ const DebtManagement = () => {
                   className="form-control"
                   placeholder="Enter End Date"
                   name="end_date"
+                  value={endDate}
+                  onChange={handleEndChange}
                 />
               </div>
             </div>
@@ -831,8 +973,8 @@ const DebtManagement = () => {
 
         <div className="flex justify-end mt-3 p-3">
           {" "}
-          <button className="btn btn-primary mr-3" onClick={handleFilterDebtManagement}> Search</button>
-          <button className="btn btn-danger">Reset</button>
+          <button className="btn btn-primary mr-3" onClick={handleFilterDebtManagement}> {loading ? <Spinner /> :"Search"}</button>
+          <button className="btn btn-danger" onClick={Reset}>Reset</button>
         </div>
       </div>
       <button
@@ -845,7 +987,23 @@ const DebtManagement = () => {
       </button>
 
       <div className="table-responsive">
-        <DataTable
+{  reversedFilteredItems1.length!==0?
+      <DataTable
+          columns={columns}
+          data={reversedFilteredItems1}
+          pagination
+          paginationRowsPerPageOptions={customRowsPerPageOptions}
+          progressPending={pending}
+          paginationResetDefaultPage={resetPaginationToggle}
+          subHeader
+          subHeaderComponent={subHeaderComponentMemo}
+          paginationServer
+          paginationTotalRows={totalRows}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handlePerRowsChange}
+        />
+        :
+      <DataTable
           columns={columns}
           data={reversedFilteredItems}
           pagination
@@ -859,6 +1017,7 @@ const DebtManagement = () => {
           onChangePage={handlePageChange}
           onChangeRowsPerPage={handlePerRowsChange}
         />
+        }
       </div>
 
       <div className="modal fade"  id="viewMore">

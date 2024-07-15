@@ -438,15 +438,15 @@ const getBank = (id) => {
   const handleFilter = async (e) => {
     e.preventDefault();
 
+    console.log(`payment/${organisationId}/payment-filter?PayerId=&Revenue=${revenue?.label ? revenue?.label : ""}&BankCode=${bank.value ? bank.value : ""}&StartDate=${startDate ? startDate : ""}EndDate=${endDate ? endDate : ""}&Agency=${agency?.value ? agency?.value : ""}`)
     try {
       setLoading(true);
-
       const response = await api.get(`payment/${organisationId}/payment-filter?PayerId=&Revenue=${revenue?.label ? revenue?.label : ""}&BankCode=${bank.value ? bank.value : ""}&StartDate=${startDate ? startDate : ""}EndDate=${endDate ? endDate : ""}&Agency=${agency?.value ? agency?.value : ""}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-
+      console.log("response----", response)
       setReportData([
         {
             paymentId: 2,
@@ -466,7 +466,7 @@ const getBank = (id) => {
             bankTranRef: "033112233442"
         }
     ]);
-      console.log("Data:", response?.data);
+      console.log("Data set:", response?.data);
 
     } catch(error){
         console.log("Error:", error);

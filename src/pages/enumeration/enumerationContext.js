@@ -419,6 +419,7 @@ function removeDuplicates(profile) {
     console.log("FormData:", formData);
 
     if (customerStatus == false) {
+      console.log("New Customer-------------")
       console.log(`End point for ${customerStatus}:`, `enumeration/${organisationId}`);
       await api
         .post(
@@ -542,7 +543,7 @@ function removeDuplicates(profile) {
         });
     } else {
       setLoadingBusiness(true);
-  
+      console.log("Existing Customer-------------")
       console.log("Data:", existingCustomerFields);
       console.log("Selected Property:", selectedProperty);
       console.log("Selected Customer:", selectedCustomer);
@@ -562,7 +563,7 @@ function removeDuplicates(profile) {
           }
         )
         .then((response) => {
-          console.log(response);
+          console.log("Enumeration data response------",response);
           console.log("formValues", agencyOption);
 
 

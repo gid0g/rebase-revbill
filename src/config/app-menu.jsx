@@ -26,7 +26,7 @@ export const SuperAdminMenu = [
   {
     path: "bankmanagement",
     icon: "fa fa-building-columns",
-    title: "Payment Management",
+    title: " Bank Management",
   },
   {
     path: "billing",
@@ -82,7 +82,7 @@ export const SuperAdminMenu = [
       { path: "administration/tenant", title: "Tenant" },
       { path: "administration/organisation", title: "Organization" },
       { path: "administration/profile", title: "Profile" },
-      { path: "administration/payments", title: "Payments" },
+      // { path: "administration/payments", title: "Payments" },
     ],
   },
 ];
@@ -107,7 +107,11 @@ export const AdminMenu = [
       { path: "enumeration/manifest", title: "Manifest" },
     ],
   },
-
+  {
+    path: "viewmodules",
+    icon: "fa fa-vault",
+    title: "Module Management",
+  },
   {
     path: "billing",
     icon: "fa fa-money-bill-wave",
@@ -154,7 +158,7 @@ export const AdminMenu = [
       { path: "administration/businesssize", title: "Business Size" },
       { path: "administration/users", title: "Users" },
       { path: "administration/profile", title: "Profile" },
-      { path: "administration/payments", title: "Payments" },
+      // { path: "administration/payments", title: "Payments" },
     ],
   },
 ];
@@ -317,7 +321,7 @@ export const Admin1Menu = [
       { path: "administration/businesssize", title: "Business Size" },
       { path: "administration/users", title: "Users" },
       { path: "administration/profile", title: "Profile" },
-      { path: "administration/payments", title: "Payments" },
+      // { path: "administration/payments", title: "Payments" },
     ],
   },
 ];

@@ -7,6 +7,8 @@ import { Spinner } from "react-activity";
 import { AppSettings } from "../../../config/app-settings";
 import "react-activity/dist/library.css";
 import { ToastContainer, toast } from "react-toastify";
+import Toast from 'react-bootstrap/Toast';
+
 
 const Agencies = () => {
   const token = sessionStorage.getItem("myToken");
@@ -24,6 +26,8 @@ const Agencies = () => {
   const [agencyCode, setAgencyCode] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const customRowsPerPageOptions = [5, 10, 20];
+
+  const [show, setShow] = useState(false);
 
   const [editRow, setEditRow] = useState(null);
   const [itemId, setItemId] = useState("");
@@ -58,25 +62,33 @@ const Agencies = () => {
       },
     },
 
-    {
-      name: "Action",
-      sortable: false,
-      center: true,
-      grow: 0,
+    // {
+    //   name: "Action",
+    //   sortable: false,
+    //   center: true,
+    //   grow: 0,
 
-      cell: (row) => (
-        <button
-          data-bs-toggle="modal"
-          data-bs-target="#editAgency"
-          className="btn text-dark"
-          type="button"
-          onClick={() => handleEdit(row)}
-        >
-          <i className="fa-solid fa-pen-to-square"></i> Edit
-        </button>
-      ),
-    },
+    //   cell: (row) => (
+    //     <button
+    //       data-bs-toggle="modal"
+    //       data-bs-target="#editAgency"
+    //       className="btn text-dark"
+    //       type="button"
+    //       onClick={() => handleEdit(row)}
+    //     >
+    //       <i className="fa-solid fa-pen-to-square"></i> Edit
+    //     </button>
+    //   ),
+    // },
   ];
+
+  const organisationId = sessionStorage.getItem("organisationId");
+
+
+////////////////////////////
+
+////////////////////////////
+
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -90,7 +102,6 @@ const Agencies = () => {
     setItemId(item.agencyId);
   };
 
-  const organisationId = sessionStorage.getItem("organisationId");
 
   const handleChange = (event) => {
     setNewAgency(event.target.value);
@@ -168,8 +179,8 @@ const Agencies = () => {
     {
       organisationId: organisationId,
       agencyCode: editRow.agencyCode,
-      agencyName: editRow.newAgency,
-      description: editRow.description,
+      agencyName: editRow.agencyName,
+      description: editRow.description ? editRow.description :"",
       active: true,
       dateModified: new Date().toISOString(),
       modifiedBy: modifiedBy
@@ -324,8 +335,12 @@ const Agencies = () => {
           progress: undefined,
           theme: "colored",
         });
-
+        setShow(true)
         fetchAgencies();
+        setTimeout(()=>{
+          window.location.reload();
+        },2000)
+
       }
     } catch(error) {
       toast.error("Unable to Refresh Agencies", {
@@ -345,6 +360,10 @@ const Agencies = () => {
 
   return (
     <>
+          {/* <ToastContainer position="top-end" className="mt-5" style={{ zIndex: 1 }}> 
+</ToastContainer> */}
+<ToastContainer />
+    {/*  */}
       <div>
         <div className="mb-2 pl-3 flex justify-content-between">
           <div className=" ">
@@ -582,7 +601,8 @@ const Agencies = () => {
                       <div className="d-flex justify-content-end">
                         <button
                           type="submit"
-                          className="btn shadow-md bg-blue-900 text-white"
+                          className="btn shadow-md bg-blue-900 
+                          text-white"
                         >
                           {loading ? <Spinner /> : "Edit"}
                         </button>

@@ -67,7 +67,7 @@ const PropertyProfile = () => {
     },
     {
       name: "Ward Name",
-      selector: (row) => row.ward.wardName,
+      selector: (row) => row.ward?.wardName,
       sortable: true,
       grow: 0,
     },
@@ -124,6 +124,7 @@ const PropertyProfile = () => {
       button: true,
     },
   ];
+
   const subHeaderComponentMemo = useMemo(() => {
     const handleClear = () => {
       if (filterText) {

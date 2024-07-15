@@ -43,6 +43,7 @@ const CreatePayId = () => {
     pid: "",
     address: "",
   });
+  
   const [maritalStatus, setMaritalStatus] = useState([]);
   const [maritalOption, setMaritalOption] = useState("");
   const [data, setData] = useState({});
@@ -62,6 +63,7 @@ const CreatePayId = () => {
     setShowBvn(false);
     setShowForm(true);
     setShowBiodata(false);
+   
   };
   const showBvnForm = (event) => {
     setValue(event.target.value);
@@ -87,6 +89,7 @@ const CreatePayId = () => {
   const handleMaritalOption = (event) => {
     setMaritalOption(event.target.value);
   };
+ 
   const handleSexOption = (event) => {
     setSexOption(event.target.value);
   };
@@ -105,6 +108,38 @@ const CreatePayId = () => {
     });
   };
 
+  useEffect(()=>{
+    setTimeout(()=>{
+      
+      console.log("gotten",maritalStatus,state,sex)
+    },2000)
+  },[maritalStatus,state,sex])
+
+  const transformedmaritalStatus = maritalStatus
+  ? maritalStatus.map((item) => ({
+      label: item.maritalStatusName,
+      value: item.maritalStatusCode,
+    }))
+  : [];
+  const transformedState = state
+  ? state.map((item) => ({
+      label: item.stateName,
+      value: item.stateName,
+    }))
+  : [];
+  const transformedsex = sex
+  ? sex.map((item) => ({
+      label: item.genderName,
+      value: item.genderCode,
+    }))
+  : [];
+
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+
+  const maxDate = `${yyyy - 18}-${mm}-${dd}`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,7 +163,7 @@ const CreatePayId = () => {
     };
     
     fetchData();
-  }, [token]);
+  }, [token,value]);
 
   useEffect(() => {
     const fetchState = async () => {
@@ -152,7 +187,7 @@ const CreatePayId = () => {
         });
     };
     fetchState();
-  }, []);
+  }, [token,value]);
 
 
   const checkGender = (gender) => {
@@ -332,10 +367,12 @@ const CreatePayId = () => {
       })
       .catch((error) => {
         console.log(error);
-        if (error.response.status === 422) {
-          setLoading(false);
-          toast.error("please fill all required fields", {
-            position: "top-right",
+        if(error.response){
+
+          if (error.response?.status === 422) {
+            setLoading(false);
+            toast.error("please fill all required fields", {
+              position: "top-right",
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -358,6 +395,7 @@ const CreatePayId = () => {
             theme: "light",
           });
         }
+      }
       }).finally(() => {
         setLoading(false);
       });
@@ -479,7 +517,24 @@ const CreatePayId = () => {
       title: titleOption,
       type: typeOption,
     }
-
+    const dataSent ={
+      type: typeOption,
+      title: titleOption,
+      hash: "string",
+      clientId: "string",
+      sex: sexOption,
+      lastName: input.lastName,
+      firstName: input.firstName,
+      otherName: input.middleName,
+      maritalStatus: maritalOption,
+      dateOfBirth: dob,
+      phone: input.phoneNo,
+      email: input.email,
+      address: input.address,
+      state: stateOption,
+    }
+    console.log("Form sent-----", dataSent)
+    console.log("state", stateOption)
     console.log("FormData:", formData);
     await api
       .post(
@@ -866,6 +921,7 @@ const CreatePayId = () => {
                           </option>
                         ))}
                       </select>
+
                     </div>
                   </div>
                   <div className="col-lg-2">
@@ -900,6 +956,7 @@ const CreatePayId = () => {
                         value={dob}
                         onChange={changeDob}
                         required
+                        max={maxDate}
                       />
                     </div>
                   </div>
