@@ -76,6 +76,7 @@ const CreateNewStreet = () => {
       agencyId: 0,
       streetName: "",
       description: "",
+      ward:0,
       active: false,
       dateCreated: new Date().toISOString(),
       createdBy: `${userData[0]?.email}`,
@@ -203,6 +204,12 @@ const CreateNewStreet = () => {
   };
   const handleWardChange = (wardOption) => {
     setWardOption(wardOption.value);
+    setFormData((prevFormData) => [
+      {
+        ...prevFormData[0],
+        ward: wardOption.value,
+      }
+    ]);
   };
 
   const handleAgencyChange = (agencyOption) => {
@@ -252,7 +259,7 @@ const CreateNewStreet = () => {
         const formDataToSend = {
           streetCreation: formData,
         }
-    
+        console.log("Setting street--->", formDataToSend)
         try {
           setIsLoading(true);
           const response = await api.post(

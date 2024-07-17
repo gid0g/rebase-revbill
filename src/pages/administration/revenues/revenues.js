@@ -276,7 +276,7 @@ const Revenues = () => {
       createdBy: userData[0]?.email,
     }
 
-    console.log("formData", formData);
+    console.log("formData------->", formData);
 
     await api
       .post(

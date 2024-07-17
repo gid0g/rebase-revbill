@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api, { apis } from "../../axios/custom";
 import { Spinner } from "react-activity";
 import "react-activity/dist/library.css";
@@ -32,6 +32,7 @@ const CreatePayId = () => {
   const [title, setTitle] = useState([]);
   const [titleOption, setTitleOption] = useState("");
   const [generatedPid, setGeneratedPid] = useState("");
+  const [pid, setPid] = useState("");
   const [input, setInput] = useState({
     firstName: "",
     lastName: "",
@@ -43,14 +44,14 @@ const CreatePayId = () => {
     pid: "",
     address: "",
   });
-  
+  const navigate = useNavigate();
   const [maritalStatus, setMaritalStatus] = useState([]);
   const [maritalOption, setMaritalOption] = useState("");
   const [data, setData] = useState({});
 
   const [sex, setSex] = useState([]);
   const [sexOption, setSexOption] = useState("");
-
+  const [verify,setverify] = useState("")
   const [state, setState] = useState([]);
   const [stateOption, setStateOption] = useState("");
 
@@ -263,6 +264,15 @@ const CreatePayId = () => {
     }
   }
 
+    /////////////////////////////////////////////////////////////////////////////
+    useEffect(()=>{
+      console.log("PayerID------------>", generatedPid)
+    },[generatedPid])
+    
+  
+  
+    ////////////////////////////////////////////////////////////////////////
+  
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -367,12 +377,10 @@ const CreatePayId = () => {
       })
       .catch((error) => {
         console.log(error);
-        if(error.response){
-
-          if (error.response?.status === 422) {
-            setLoading(false);
-            toast.error("please fill all required fields", {
-              position: "top-right",
+        if (error.response.status === 422) {
+          setLoading(false);
+          toast.error("please fill all required fields", {
+            position: "top-right",
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -395,7 +403,6 @@ const CreatePayId = () => {
             theme: "light",
           });
         }
-      }
       }).finally(() => {
         setLoading(false);
       });
@@ -517,23 +524,6 @@ const CreatePayId = () => {
       title: titleOption,
       type: typeOption,
     }
-    const dataSent ={
-      type: typeOption,
-      title: titleOption,
-      hash: "string",
-      clientId: "string",
-      sex: sexOption,
-      lastName: input.lastName,
-      firstName: input.firstName,
-      otherName: input.middleName,
-      maritalStatus: maritalOption,
-      dateOfBirth: dob,
-      phone: input.phoneNo,
-      email: input.email,
-      address: input.address,
-      state: stateOption,
-    }
-    console.log("Form sent-----", dataSent)
     console.log("state", stateOption)
     console.log("FormData:", formData);
     await api
@@ -577,18 +567,9 @@ const CreatePayId = () => {
               progress: undefined,
               theme: "colored",
             });
-            setInput({
-              firstName: "",
-              lastName: "",
-              middleName: "",
-              email: "",
-              phoneNo: "",
-              nin: "",
-              bvn: "",
-              pid: "",
-              address: "",
-            });
+
             setGeneratedPid(response.data.data.pid);
+            // validate()
           } else {
             toast.error(response.data.data.statusMessage, {
               position: "top-right",
@@ -637,41 +618,78 @@ const CreatePayId = () => {
         setLoading(false);
       });
   };
-
-
-  const createCustomer = async (e) => {
-    e.preventDefault();
+  ////////////////////////////////////////////////////////////////////////////////////
+  useEffect(()=>{
+    console.log("verified data------------->", data)
+  },[data])
+  useEffect(()=>{
+    if(verify){
+      validate()
+    }
+  },[verify])
+  useEffect(()=>{
+    if(generatedPid){
+      function extractId(str) {
+        const regex = /(N-\d{7}|C-\d{7})/;
+        const result = str.match(regex);
+        return result ? result[0] : null;
+      }
+     const id = extractId(generatedPid);
+     console.log("Exact payerid---------->", id)
+     setverify(id)
+    }
+  },[generatedPid])
+  const validate = async () => {
     setLoading(true);
-    console.log("Data::", data);
-
-    try {
-      const response = await api.post(`/customer/${organisationId}`, {
-        payerTypeId: checkPayerType(data?.payerID),
-        payerId: data?.payerID,
-        titleId: checkTitle(data?.title),
-        corporateName: data?.corporateName,
-        firstName: data?.firstName ? data?.firstName : data?.corporateName,
-        lastName: data?.lastName ? data.lastName : data?.corporateName,
-        middleName: data?.middleName,
-        genderId: checkGender(data?.sex),
-        maritalStatusId: checkMaritalDtoStatus(data?.maritalstatus),
-        address: data?.address,
-        email: data?.email,
-        phoneNo: data?.gsm,
-        suppliedPID: true,
-        dateCreated: new Date().toISOString(),
-        createdBy: userData[0].email,
-      },         
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    await api
+      .post(
+        "enumeration/verify-pid",
+        {
+          payerid: verify,
         },
-      });
-
-      console.log("Message:", response?.data);
-  
-      if(response?.data?.status == 200) {
-          toast.success(response.data?.statusMessage, {
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("response", response);
+        if (response.status === 200) {
+          if (response.data.statusMessage === "PayerID Record Found") {
+            setData(response.data.data);
+            setLoading(false);
+            toast.success("PayerID is verified and Customer is being created", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+            createCustomer()
+          } else {
+            setLoading(false);
+              toast.error("Verification failed, contact administrator for instructions", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
+        }
+      })
+      .then(setData({}))
+      .catch((error) => {
+        if (error.response.status === 422) {
+          setLoading(false);
+          toast.error(error.response.data.PayerId[0], {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: true,
@@ -681,9 +699,96 @@ const CreatePayId = () => {
             progress: undefined,
             theme: "colored",
           });
+        }
+        console.log(error);
+        setLoading(false);
+        
+      });
+  };
+
+  
+
+
+  const createCustomer = async () => {
+    setLoading(true);
+    console.log("Data::", data);
+    const for2send= {
+      payerTypeId: checkPayerType(data?.payerID),
+      payerId: data?.payerID || input.pid || verify,
+      titleId: checkTitle(data?.title) || 1,
+      corporateName: data?.corporateName || "",
+      firstName: data?.firstName || input.firstName || " ",
+      lastName: data.lastName ||  input.lastName || "",
+      middleName: data?.middleName || input.middleName || "",
+      genderId: checkGender(data?.sex) || 1,
+      maritalStatusId: checkMaritalDtoStatus(data?.maritalstatus) || 1,
+      address: data?.address || input.address || "",
+      email: data?.email,
+      phoneNo: data?.gsm || input.phoneNo ||"",
+      suppliedPID: true,
+      dateCreated: new Date().toISOString(),
+      createdBy: userData[0].email,
+    }
+
+  console.log("Data Sent---->",for2send)
+    try {
+      const response = await api.post(
+        `/customer/${organisationId}`,
+        {
+          payerTypeId: checkPayerType(data?.payerID),
+          payerId: data?.payerID || input.pid || verify,
+          titleId: checkTitle(data?.title) || 1,
+          corporateName: data?.corporateName || "",
+          firstName: data?.firstName || input.firstName || " ",
+          lastName: data.lastName ||  input.lastName || "",
+          middleName: data?.middleName || input.middleName || "",
+          genderId: checkGender(data?.sex) || 1,
+          maritalStatusId: checkMaritalDtoStatus(data?.maritalstatus) || 1,
+          address: data?.address || input.address || "",
+          email: data?.email || input.email,
+          phoneNo: data?.gsm || input.phoneNo ||"",
+          suppliedPID: true,
+          dateCreated: new Date().toISOString(),
+          createdBy: userData[0].email,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Message:", response?.data);
+
+      if (response?.data?.status == 200) {
+        toast.success(response.data?.statusMessage, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        setInput({
+          firstName: "",
+          lastName: "",
+          middleName: "",
+          email: "",
+          phoneNo: "",
+          nin: "",
+          bvn: "",
+          pid: "",
+          address: "",
+        });
+        setTimeout(() => {
+          navigate("/home/enumeration/customerprofile");
+          window.location.reload();
+        }, 5000);
       }
 
-      if(response?.data?.status == 409) {
+      if (response?.data?.status == 409) {
         toast.error(response.data?.statusMessage, {
           position: "top-right",
           autoClose: 5000,
@@ -694,14 +799,16 @@ const CreatePayId = () => {
           progress: undefined,
           theme: "colored",
         });
-    }
 
+        setTimeout(() => {
+          navigate("/home/enumeration/customerprofile");
+        }, 5000);
+      }
     } catch (error) {
       if (error.response && error.response.data) {
         const errorData = error.response?.data;
-  
-        if (typeof errorData === 'string') {
 
+        if (typeof errorData === "string") {
           toast.error(errorData, {
             position: "top-right",
             autoClose: 5000,
@@ -713,14 +820,26 @@ const CreatePayId = () => {
             theme: "colored",
           });
         } else {
+          const flatErrors = Object.entries(errorData).flatMap(
+            ([key, value]) => {
+              if (typeof value != Array)
+                return value?.map((message) => `${key}: ${message}`);
+            }
+          );
 
-          const flatErrors = Object.entries(errorData).flatMap(([key, value]) => {
-            if(typeof value != Array) return value?.map((message) => `${key}: ${message}`);
-          });
-  
-          const errorMessage = flatErrors.join('\n');
-  
+          const errorMessage = flatErrors.join("\n");
+
           toast.error(errorMessage, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          toast.error("Contact administrator to update information", {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: true,
@@ -732,7 +851,6 @@ const CreatePayId = () => {
           });
         }
       } else {
-        // Handle other types of errors here
         console.error(error);
       }
     } finally {
@@ -740,7 +858,7 @@ const CreatePayId = () => {
     }
   };
 
-  
+  ///////////////////////////////////////////////////////////////////////////////////////
   const handlePayerTypeChange = (selectedPayer) => {
     console.log("Selected Payer:", selectedPayer);
     setPayerType(selectedPayer.value);

@@ -197,6 +197,7 @@ const NewPropertyProfile = () => {
 
     try {
       const fetchedStreets = await fetchAgencyStreets(agencyOption?.value);
+      console.log("Streets data---->", fetchedStreets)
       setStreets(fetchedStreets);
     } catch (error) {
       console.error("Error fetching streets:", error);
@@ -204,10 +205,16 @@ const NewPropertyProfile = () => {
     }
   };
 
-
+  const [wardId, setWardId]=useState(0)
 
   const handleStreetChange = (streetOption) => {
-    console.log("street:", streetOption);
+    console.log("street----->", streetOption);
+     streets.filter((street)=>{
+      if(streetOption.value===street.streetId){
+        console.log("wardid----->", street.wardId)
+        setWardId(street.wardId)
+      }
+    })
     setStreetOption(streetOption);
   }
  
@@ -266,31 +273,31 @@ const NewPropertyProfile = () => {
       const formattedLocationAddress = buildingNumber + " " + streetOption.label
       console.log("formattedLocationAddress",formattedLocationAddress)
       setNewCustomerStatus(true);
-      const formData = {
-        agencyId: agencyOption,
-        spaceIdentifierId: spaceIdentifierOption,
-        streetId: streetOption.value,
-        wardId:wardOption,
-        locationAddress: formattedLocationAddress,
-        spaceFloor: parseInt(spaceFloor),
-        buildingNo: buildingNumber,
-        buildingName: spaceName,
-        createdBy: userData[0]?.email,
-        dateCreated: new Date().toISOString()
+      const createProperty = {
+        AgencyId: agencyOption,
+        SpaceIdentifierId: spaceIdentifierOption,
+        StreetId: streetOption.value,
+        wardId:wardId,
+        LocationAddress: formattedLocationAddress,
+        SpaceFloor: parseInt(spaceFloor),
+        BuildingNo: buildingNumber,
+        BuildingName: spaceName,
+        CreatedBy: userData[0]?.email,
+        DateCreated: new Date().toISOString()
       }
 
       try {
-        const createProperty = {
-          AgencyId:formData.agencyId,
-          SpaceIdentifierId:formData.spaceIdentifierId,
-          StreetId:formData.streetId,
-          LocationAddress:formData.locationAddress,
-          SpaceFloor:formData.spaceFloor,
-          BuildingNo:formData.buildingNo,
-          BuildingName:formData.buildingName,
-          DateCreated:formData.dateCreated,
-          CreatedBy:formData.createdBy
-        }
+        // const createProperty = {
+        //   AgencyId:formData.agencyId,
+        //   SpaceIdentifierId:formData.spaceIdentifierId,
+        //   StreetId:formData.streetId,
+        //   LocationAddress:formData.locationAddress,
+        //   SpaceFloor:formData.spaceFloor,
+        //   BuildingNo:formData.buildingNo,
+        //   BuildingName:formData.buildingName,
+        //   DateCreated:formData.dateCreated,
+        //   CreatedBy:formData.createdBy
+        // }
         const response = await api.post(`enumeration/${organisationId}/property`,
           createProperty,
           {
@@ -315,6 +322,11 @@ const NewPropertyProfile = () => {
               progress: undefined,
               theme: "colored",
             });
+            setSpaceName("")
+            setSpaceFloor("")
+            setBuildingNumber("")
+            setLocationAddress("")
+            setWardOption("")
           } else if(response?.data?.status == 403) {
             toast.error(response?.data?.statusMessage, {
               position: "top-right",
@@ -448,6 +460,52 @@ useEffect(()=>{
                       </div>
                     </div> */}
                     <div className="col">
+                      <div className="mb-3">
+                        <label
+                          className="form-label"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          Agency
+                        </label>
+
+                        {roleId != 1 && roleId != 2 && (
+                            <input
+                              className="form-control"
+                              type="text"
+                              name="Agency"
+                              placeholder="Select Agency"
+                              value={getRoleAgency(agencyId)}
+                              readOnly
+                            />
+                        )}
+
+                        {roleId == 2 && (
+                          <Select
+                            className="basic-single"
+                            classNamePrefix="select"
+                            defaultValue={transformedAgencyData.find(option => option.value == agencyId)}
+                            isSearchable={true}
+                            name="Agency"
+                            options={transformedAgencyData}
+                            onChange={handleAgencyChange}
+                          />   
+                        )}
+
+                        {roleId == 1 && (
+                          <Select
+                            className="basic-single"
+                            classNamePrefix="select"
+                            defaultValue="Select Agency"
+                            isSearchable={true}
+                            name="Agency"
+                            options={transformedAgencyData}
+                            onChange={handleAgencyChange}
+                          />   
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="col">
                       <div className="flex flex-column mb-3">
                         <label className="form-label">Building Number</label>{" "}
                         {error.buildingNumber && (
@@ -497,55 +555,6 @@ useEffect(()=>{
                           className="form-label"
                           htmlFor="exampleInputEmail1"
                         >
-                          Agency
-                        </label>
-
-                        {roleId != 1 && roleId != 2 && (
-                            <input
-                              className="form-control"
-                              type="text"
-                              name="Agency"
-                              placeholder="Select Agency"
-                              value={getRoleAgency(agencyId)}
-                              readOnly
-                            />
-                        )}
-
-                        {roleId == 2 && (
-                          <Select
-                            className="basic-single"
-                            classNamePrefix="select"
-                            defaultValue={transformedAgencyData.find(option => option.value == agencyId)}
-                            isSearchable={true}
-                            name="Agency"
-                            options={transformedAgencyData}
-                            onChange={handleAgencyChange}
-                          />   
-                        )}
-
-                        {roleId == 1 && (
-                          <Select
-                            className="basic-single"
-                            classNamePrefix="select"
-                            defaultValue="Select Agency"
-                            isSearchable={true}
-                            name="Agency"
-                            options={transformedAgencyData}
-                            onChange={handleAgencyChange}
-                          />   
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="row">
-
-                  <div className="col">
-                      <div className="mb-3">
-                        <label
-                          className="form-label"
-                          htmlFor="exampleInputEmail1"
-                        >
                           Street
                         </label>
                         <Select
@@ -559,9 +568,9 @@ useEffect(()=>{
                         />
                       </div>
                     </div>
+                  </div>
 
-                    <div className="col"></div>
-
+                  <div className="row">
                     {/* <div className="col">
                       <div className=" flex flex-column mb-3">
                         <label className="form-label">Location Address</label>{" "}

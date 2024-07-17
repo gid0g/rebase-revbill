@@ -246,10 +246,11 @@ const PropertyProfile = () => {
       )
       .then((response) => {
         setLoading(false);
+        console.log("PropertyData------------->", response.data)
+        setPropertyData(response.data);
         var paginationData = response.headers["x-pagination"];
         const parsedPaginationData = JSON.parse(paginationData);
         setTotalRows(parsedPaginationData.TotalPages);
-        setPropertyData(response.data);
       })
       .catch((error) => {
         toast.error(error.message, {
@@ -304,7 +305,7 @@ const PropertyProfile = () => {
   const submittedData = {
     agencyId: editRow?.agencies.agencyId,
     spaceIdentifierId: editRow?.spaceIdentifier.id,
-    wardId: editRow?.ward.id,
+    wardId: editRow?.ward?.id,
     locationAddress: editRow?.locationAddress,
     spaceFloor: editRow?.spaceFloor,
     buildingNo: editRow?.buildingNo,
@@ -367,6 +368,7 @@ const PropertyProfile = () => {
   };
 
   const handleEdit = (item) => {
+    console.log("Editing---->", item)
     setEditRow({ ...item });
   };
 
@@ -590,7 +592,7 @@ const PropertyProfile = () => {
                           className="form-control"
                           type="text"
                           disabled
-                          value={selectedRow ? selectedRow.ward.wardName : ""}
+                          value={selectedRow ? selectedRow?.ward?.wardName : ""}
                         />
                       </div>
                     </div>
