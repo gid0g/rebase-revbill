@@ -287,17 +287,6 @@ const NewPropertyProfile = () => {
       }
 
       try {
-        // const createProperty = {
-        //   AgencyId:formData.agencyId,
-        //   SpaceIdentifierId:formData.spaceIdentifierId,
-        //   StreetId:formData.streetId,
-        //   LocationAddress:formData.locationAddress,
-        //   SpaceFloor:formData.spaceFloor,
-        //   BuildingNo:formData.buildingNo,
-        //   BuildingName:formData.buildingName,
-        //   DateCreated:formData.dateCreated,
-        //   CreatedBy:formData.createdBy
-        // }
         const response = await api.post(`enumeration/${organisationId}/property`,
           createProperty,
           {

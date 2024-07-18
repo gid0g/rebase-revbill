@@ -258,7 +258,9 @@ function removeDuplicates(profile) {
     createdBy: obj.createdBy,
   }));
 
-
+useEffect(()=>{
+  console.log("Converted------------->", convertedField)
+},[convertedField])
   const submitPayerId = (e) => {
     e.preventDefault();
     navigate("enumeration/createbusinessprofile");
@@ -545,7 +547,7 @@ function removeDuplicates(profile) {
     } else {
       setLoadingBusiness(true);
   
-      console.log("Data:", existingCustomerFields);
+      console.log("Data sent--------->", existingCustomerFields);
       console.log("Selected Property:", selectedProperty);
       console.log("New Property:", newPropertyId);
       console.log("Selected Customer:", selectedCustomer);
