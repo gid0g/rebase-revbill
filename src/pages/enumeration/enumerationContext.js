@@ -288,7 +288,7 @@ useEffect(()=>{
   const nameInfo = splitFullName(fullName);
   
   const payerTypeDto = customerStatus == false ? checkPayerType(data?.payerID) : checkPayerType(data?.payerTypes?.payerTypeCode);
-  const payerDto = data?.payerID;
+  const payerDto = data?.payerId;
   const titleDto = customerStatus == false ? 1 : checkTitle(data?.titles?.titleCode);
   const genderDto = customerStatus == false ? 1 : checkGender(data?.genders?.genderCode);
   const maritalStatusDto = customerStatus == false ? 1 : checkMaritalDtoStatus(data?.maritalStatuses);
@@ -299,7 +299,8 @@ useEffect(()=>{
   const lastNameDto =  nameInfo.lastName;
   const addressDto = data.address;
   const emailDto = data.email;
-  const suppliedPidDto = customerStatus == false ? true : enumerationStatus;
+  // const suppliedPidDto = customerStatus == false ? false : enumerationStatus;
+  const suppliedPidDto = data?.payerId == null ? false : true;
   
 
   console.log("Customer Data:", data);
@@ -323,7 +324,7 @@ useEffect(()=>{
     createdBy: userData[0]?.email,
   };
   
-  console.log("createCustomerDto:", createCustomerDto);
+  console.log("createCustomerDto------------>:", createCustomerDto);
 
   const chooseAgency = (status) => {
     if(status == true){
@@ -420,7 +421,7 @@ useEffect(()=>{
         },
     }
 
-    console.log("FormData:", formData);
+    console.log("FormData------------->", formData);
 
     if (customerStatus == false) {
       console.log(`End point for ${customerStatus}:`, `enumeration/${organisationId}`);

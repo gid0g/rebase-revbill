@@ -2,3 +2,4 @@ node_modules
 /.vs
 /build
 /build/static
+node_modules
