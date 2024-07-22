@@ -154,6 +154,7 @@ const PropertyProfile = () => {
     setExistingCustomerAgencyId,
     setExistingPropertyForNewCustomer,
     setNewCustomerStatus,
+    setAgencyId,
   } = useContext(Context);
 
   const [filterGroups, setFilterGroups] = useState([]);
@@ -359,6 +360,7 @@ const PropertyProfile = () => {
 
   const handleEnumerationStatus = (item) => {
     console.log("Enumeration Item:", item);
+    setAgencyId(item?.agencies?.agencyId);
     setExistingPropertyForNewCustomer(item);
     setNewCustomerStatus(false);
     setBuildingName(item.buildingName);

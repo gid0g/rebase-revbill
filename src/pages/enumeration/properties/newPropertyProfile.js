@@ -45,6 +45,7 @@ const NewPropertyProfile = () => {
     customerStatus,
     setCustomerStatus,
     selectedCustomer,
+    setAgencyId,
     setSelectedCustomer,
     setLocationAddress,
     ward,
@@ -193,6 +194,7 @@ const NewPropertyProfile = () => {
   const handleAgencyChange = async (agencyOption) => {
     setAgencyOption(agencyOption.value);
     setAgencyName(agencyOption.label);
+    setAgencyId(agencyOption.value);
     console.log("agencyId", agencyOption);
 
     try {

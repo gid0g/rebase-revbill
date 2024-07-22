@@ -56,7 +56,7 @@ export const ContextProvider = ({ children }) => {
 
   const [existingCustomerFields, setExistingCustomerFields] = useState([
     {
-      agencyId: 0,
+      agencyId:  0,
       appliedDate: `${new Date().getFullYear()}`,
       BillRevenuePrices: [],
       businessTypeId: 0,
@@ -65,7 +65,7 @@ export const ContextProvider = ({ children }) => {
       createdBy: `${userData[0]?.email}`,
     },
   ]);
-
+  console.log("existingCustomerFields------------->", existingCustomerFields);
   const [enumerateFields, setEnumerateFields] = useState([]);
 
   const [enumerationPosition, setEnumerationPosition] = useState("new");
@@ -393,7 +393,10 @@ useEffect(()=>{
   }
   useEffect(()=>{
     console.log("setting new propertyiDcontext------>",newPropertyId )
-  },[newPropertyId])
+  }, [newPropertyId])
+  useEffect(() => {
+    console.log("agency changed to---------->", agencyOption);
+  }, [agencyOption]);
   const submitBusinessProfile = async (e) => {
     e.preventDefault();
     setLoadingBusiness(true);
@@ -552,7 +555,12 @@ useEffect(()=>{
       console.log("Selected Property:", selectedProperty);
       console.log("New Property:", newPropertyId);
       console.log("Selected Customer:", selectedCustomer);
-  
+      console.log(
+        "api called--------->",
+        `billing/${organisationId}/generate-bill/property/${
+          selectedProperty || newPropertyId
+        }/customer/${selectedCustomer}`
+      );
 
       //If customer exists => Bill Generation Api 
       await api
@@ -696,6 +704,7 @@ useEffect(()=>{
     locationAddress,
     setAgencyOption,
     ward,
+    setAgencyId,
     wardOption,
     streetOption,
     setStreetOption,
