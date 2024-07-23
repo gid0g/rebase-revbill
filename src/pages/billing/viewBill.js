@@ -205,6 +205,8 @@ const ViewBill = () => {
                     <br />
                     <a href="#">https://lagos.vulte.ng</a>
                     <br />
+                    <a href="#">https://pay.etranzactng.com/lirs</a>
+                    <br />
                     Click I have Bill and Select WEBGUID ("Bill" "Reference")
                   </font>
                 </div>
