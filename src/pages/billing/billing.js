@@ -56,7 +56,20 @@ const Billings = () => {
       createdBy: userData[0]?.email,
     },
   ]);
-
+  const [nonfields, setNonFields] = useState([
+    {
+      agencyId: 0,
+      revenueId: 0,
+      frequencyId: 0,
+      billAmount: 0,
+      appliedDate: `${new Date().getFullYear()}`,
+      category: "string",
+      businessType: "string",
+      businessSize: "string",
+      dateCreated: currentDate,
+      createdBy: userData[0]?.email,
+    },
+  ]);
   const [checkedRevenues, setCheckedRevenues] = useState([]);
   const [categories, setCategories] = useState([]);
   const [categoryAmounts, setCategoryAmounts] = useState([]);
@@ -177,6 +190,20 @@ const Billings = () => {
         createdBy: userData[0]?.email,
       },
     ]);
+    setNonFields([
+      {
+        agencyId: 0,
+        revenueId: 0,
+        frequencyId: 0,
+        billAmount: 0,
+        appliedDate: `${new Date().getFullYear()}`,
+        category: "string",
+        businessType: "string",
+        businessSize: "string",
+        dateCreated: currentDate,
+        createdBy: userData[0]?.email,
+      },
+    ]);
 
     setCheckedRevenues([]);
     setCategories([]);
@@ -249,9 +276,10 @@ const Billings = () => {
 
   const validateField = (field) => {
     let fieldErrors = {};
-    if (field.agencyId === 0) {
-      fieldErrors.agencyId = "Agency is required";
-    }
+  
+      if (field.agencyId === 0) {
+        fieldErrors.agencyId = "Agency is required";
+      }
 
     if (field.businessTypeId === 0) {
       fieldErrors.businessTypeId = "Business Type is required";
@@ -266,29 +294,47 @@ const Billings = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    fields.forEach((field, index) => {
-      const fieldErrors = validateField(field);
-      if (Object.keys(fieldErrors).length > 0) {
-        newErrors[`Field ${index + 1}`] = fieldErrors;
-      }
-    });
-    setErrors(newErrors);
+    if (billingTypes == 1) {  
+      fields.forEach((field, index) => {
+        const fieldErrors = validateField(field);
+        if (Object.keys(fieldErrors).length > 0) {
+          newErrors[`Field ${index + 1}`] = fieldErrors;
+        }
+      });
+    }
+    else if (billingTypes == 2) {
+         nonfields.forEach((field, index) => {
+           const fieldErrors = validateField(field);
+           if (Object.keys(fieldErrors).length > 0) {
+             newErrors[`Field ${index + 1}`] = fieldErrors;
+           }
+         });
+    } setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleTypeChange = async (selectedBusinessType, idx) => {
     // setting revenueType to default until business type changes
     setCategories([]);
-
-    const updatedFields = [...fields];
-    updatedFields[idx].businessTypeId = selectedBusinessType.value;
-    setFields(updatedFields);
-    console.log("Selected Business Type:", selectedBusinessType);
+    if (billingTypes == 1) {
+      const updatedFields = [...fields];
+      updatedFields[idx].businessTypeId = selectedBusinessType.value;
+      setFields(updatedFields);
+    }
+    else if (billingTypes == 2) {
+      const updatedFields = [...nonfields];
+      updatedFields[idx].businessType = selectedBusinessType.value;
+      setNonFields(updatedFields);
+    }
+    
+      console.log("Selected Business Type:", selectedBusinessType);
 
     setIsRevenueTypeVisible(true);
     const types = await api
       .get(
-        `revenue/${organisationId}/business-type/${fields[idx].businessTypeId}`,
+        `revenue/${organisationId}/business-type/${
+          fields[idx].businessTypeId || nonfields[idx].businessType
+        }`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -312,16 +358,24 @@ const Billings = () => {
   };
 
   const handleSizeChange = async (selectedBusinessSize, idx) => {
-    const updatedFields = [...fields];
-    console.log("Updated Fields", updatedFields);
     console.log("Index Fields", idx);
-
-    updatedFields[idx].businessSizeId = selectedBusinessSize.value;
-    setFields(updatedFields);
+    if (billingTypes == 1) {
+      const updatedFields = [...fields];
+    console.log("Updated Fields", updatedFields);
+      updatedFields[idx].businessSizeId = selectedBusinessSize.value;
+      setFields(updatedFields);
+    } else if (billingTypes == 2) {
+      const updatedFields = [...nonfields];
+    console.log("Updated Fields", updatedFields);
+      updatedFields[idx].businessSize = selectedBusinessSize.value;
+      setNonFields(updatedFields);
+    }
 
     const types = await api
       .get(
-        `revenue/${organisationId}/business-size/${fields[idx].businessSizeId}`,
+        `revenue/${organisationId}/business-size/${
+          fields[idx].businessSizeId || nonfields[idx].businessSize
+        }`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -344,30 +398,46 @@ const Billings = () => {
   };
 
   const handleFrequencyChange = (selectedFrequency, idx) => {
-    const updatedFields = [...fields];
+    const updatedFields = [...nonfields];
     updatedFields[idx].frequencyId = selectedFrequency.value;
-    setFields(updatedFields);
+    setNonFields(updatedFields);
   };
 
   const handleAgencyChange = (selectedAgency, idx) => {
-    const updatedFields = [...fields];
-    updatedFields[idx].agencyId = selectedAgency.value;
-    setFields(updatedFields);
+    if (billingTypes == 1) {
+        const updatedFields = [...fields];
+        updatedFields[idx].agencyId = selectedAgency.value;
+        setFields(updatedFields);
+    } else if (billingTypes == 2) {
+      
+      const updatedFields = [...nonfields];
+      updatedFields[idx].agencyId = selectedAgency.value;
+      setNonFields(updatedFields);
+    }
   };
 
   function handleRevenueChange(idx, event) {
     const { checked } = event.target;
     const value = event.target.value;
-    const updatedFields = [...fields];
-
-    console.log("Updated Fields:", updatedFields);
-    updatedFields[idx].createdBy = userData[0]?.email;
-    setFields(updatedFields);
-
-    setSelectedRevenueItems((prevSelectedItems) => [
-      ...prevSelectedItems,
-      updatedFields[idx].revenueId,
-    ]);
+    if (billingTypes == 1) {
+      const updatedFields = [...fields];
+      console.log("Updated Fields:", updatedFields);
+      updatedFields[idx].createdBy = userData[0]?.email;
+      setFields(updatedFields);
+      setSelectedRevenueItems((prevSelectedItems) => [
+        ...prevSelectedItems,
+        updatedFields[idx].revenueId,
+      ]);
+    } else if (billingTypes == 2) { 
+         const updatedFields = [...nonfields];
+         console.log("Updated Fields:", updatedFields);
+         updatedFields[idx].createdBy = userData[0]?.email;
+         setNonFields(updatedFields);
+         setSelectedRevenueItems((prevSelectedItems) => [
+           ...prevSelectedItems,
+           updatedFields[idx].revenueId,
+         ]);
+    }
 
     console.log("Checked Revenues:", checkedRevenues);
   }
@@ -414,20 +484,26 @@ const Billings = () => {
   };
 
   const handleCategoryChange = (selectedCategory, index) => {
-    const updatedFields = [...fields];
-
+    
     if (selectedCategory) {
       const billRevenuePrice = {
         revenueId: selectedCategory?.revenue,
         billAmount: selectedCategory?.amount,
         category: selectedCategory?.label,
       };
-
-      updatedFields[0].BillRevenuePrices = [
-        ...updatedFields[0].BillRevenuePrices,
-        billRevenuePrice,
-      ];
-
+      if (billingTypes == 1) {
+        const updatedFields = [...fields];
+        updatedFields[0].BillRevenuePrices = [
+          ...updatedFields[0].BillRevenuePrices,
+          billRevenuePrice,
+        ];
+      } else if (billingTypes == 2) { 
+           const updatedFields = [...nonfields];
+           updatedFields[0].billAmount = selectedCategory?.amount;
+           updatedFields[0].category = selectedCategory?.label;
+        updatedFields[0].revenueId = selectedCategory?.revenue;
+        console.log("Updated Fields:", updatedFields);
+      }
       // Update the categoryAmounts array with the amount for the current category
       const newCategoryAmounts = [...categoryAmounts];
       newCategoryAmounts[index] = selectedCategory?.amount;
@@ -436,7 +512,9 @@ const Billings = () => {
       setIsAmountVisible(true);
     }
   };
-
+  useEffect(() => {
+  console.log("current Non:", nonfields)
+}, [nonfields])
   //submit function for generating Property bill
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -535,10 +613,10 @@ const Billings = () => {
       "Do you want to continue to generate bill?"
     );
 
-    console.log("Non-Fields:", fields);
+    console.log("Non-Fields----------------------->", nonfields);
     if (isValid && confirmation) {
       const formData = {
-        createNonPropertyBillDto: fields,
+        createNonPropertyBillDto: nonfields,
       };
 
       try {
@@ -571,7 +649,8 @@ const Billings = () => {
         }
         setLoading(false);
       } catch (error) {
-        handleErrors(error);
+        // handleErrors(error);
+          setLoading(false);
       }
     }
   };
