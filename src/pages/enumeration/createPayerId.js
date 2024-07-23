@@ -552,7 +552,7 @@ const CreatePayId = () => {
         }
       )
       .then((response) => {
-        console.log(response);
+        console.log("created person------>",response);
 
         if (response.data.data) {
           if (response.data.status === 200) {
@@ -654,7 +654,7 @@ const CreatePayId = () => {
         }
       )
       .then((response) => {
-        console.log("response", response);
+        console.log("response------------------>", response);
         if (response.status === 200) {
           if (response.data.statusMessage === "PayerID Record Found") {
             setData(response.data.data);
@@ -739,14 +739,14 @@ const CreatePayId = () => {
           payerId: data?.payerID || input.pid || verify,
           titleId: checkTitle(data?.title) || 1,
           corporateName: data?.corporateName || "",
-          firstName: data?.firstName || input.firstName || " ",
-          lastName: data.lastName ||  input.lastName || "",
-          middleName: data?.middleName || input.middleName || "",
+          firstName: data?.firstName || input.lastName || " ",
+          lastName: data.lastName || input.middleName || "",
+          middleName: data?.middleName || input.firstName || "",
           genderId: checkGender(data?.sex) || 1,
           maritalStatusId: checkMaritalDtoStatus(data?.maritalstatus) || 1,
           address: data?.address || input.address || "",
           email: data?.email || input.email,
-          phoneNo: data?.gsm || input.phoneNo ||"",
+          phoneNo: data?.gsm || input.phoneNo || "",
           suppliedPID: true,
           dateCreated: new Date().toISOString(),
           createdBy: userData[0].email,
@@ -758,7 +758,7 @@ const CreatePayId = () => {
         }
       );
 
-      console.log("Message:", response?.data);
+      console.log("Message----------->", response?.data);
 
       if (response?.data?.status == 200) {
         toast.success(response.data?.statusMessage, {
@@ -783,8 +783,8 @@ const CreatePayId = () => {
           address: "",
         });
         setTimeout(() => {
-          navigate("/home/enumeration/customerprofile");
-          window.location.reload();
+          // navigate("/home/enumeration/customerprofile");
+          // window.location.reload();
         }, 5000);
       }
 
@@ -902,7 +902,7 @@ const CreatePayId = () => {
           <Link to="/dashboard">Home</Link>
         </li>
         <li className="breadcrumb-item">
-          <Link to="/Enumeration">Enumeration</Link>
+          <Link to="/home/enumeration">Enumeration</Link>
         </li>
         <li className="breadcrumb-item active">Create Payer Id </li>
       </ol>
