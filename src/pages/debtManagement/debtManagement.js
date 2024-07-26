@@ -715,7 +715,7 @@ useEffect(()=>{
       <div className="mb-2 pl-3 flex justify-content-between">
         <div className=" ">
           <h5 className=" mb-2">Debt Report</h5>
-          <h3 className="">Unbalanced Bill Summary</h3>
+          <h3 className="">Defaulters List</h3>
         </div>
       </div>
 
