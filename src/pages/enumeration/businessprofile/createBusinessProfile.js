@@ -58,52 +58,102 @@ const AddBusinessProfile = () => {
     useEffect(()=>{
       console.log("allSelected ", allSelected)
     },[allSelected])
-  async function handleTypeChange(index, event) {
-    const { name, value } = event.target;
-    const selectedIndex = event.target.selectedIndex;
-    const selectedOption = {
-      id: value,
-      name: event.target[selectedIndex].text,
-    };
-    const updatedFields = [...fields];
+  // async function handleTypeChange(index, event) {
+  //   const { name, value } = event.target;
+  //   const selectedIndex = event.target.selectedIndex;
+  //   const selectedOption = {
+  //     id: value,
+  //     name: event.target[selectedIndex].text,
+  //   };
+  //   const updatedFields = [...fields];
   
-    updatedFields[index] = {
-      ...updatedFields[index],
-      businessTypeId: parseInt(selectedOption.id),
-    };
-    setTypeSelected((prevTypeSelected) => ({...prevTypeSelected, [index]: event.target.value!== "" }));
+  //   updatedFields[index] = {
+  //     ...updatedFields[index],
+  //     businessTypeId: parseInt(selectedOption.id),
+  //   };
+  //   setTypeSelected((prevTypeSelected) => ({...prevTypeSelected, [index]: event.target.value!== "" }));
 
-    setFields(updatedFields);
-    setIsRevenueTypeVisible(true);
-    const types = await api
-      .get(
-        `revenue/${organisationId}/business-type/${selectedOption.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  //   setFields(updatedFields);
+  //   setIsRevenueTypeVisible(true);
+  //   const types = await api
+  //     .get(
+  //       `revenue/${organisationId}/business-type/${selectedOption.id}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       return response.data;
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
   
-    setRevenueType((prevRevenueType) => ({
-      ...prevRevenueType,
-      [index]: {
-        types: types,
-      },
-    }));
+  //   setRevenueType((prevRevenueType) => ({
+  //     ...prevRevenueType,
+  //     [index]: {
+  //       types: types,
+  //     },
+  //   }));
   
-    updatedFields[index].createdBy = userData[0]?.email;
-    updatedFields[index].billRevenues = [];
-    console.log("Updated Size Fields:", updatedFields);
-  }
+  //   updatedFields[index].createdBy = userData[0]?.email;
+  //   updatedFields[index].billRevenues = [];
+  //   console.log("Updated Size Fields:", updatedFields);
+  // }
 
+ async function handleTypeChange(index, event) {
+   const { name, value } = event.target;
+   const selectedIndex = event.target.selectedIndex;
+   const selectedOption = {
+     id: value,
+     name: event.target[selectedIndex].text,
+   };
 
+   setFields((prevFields) => {
+     const updatedFields = [...prevFields];
+     updatedFields[index] = {
+       ...updatedFields[index],
+       businessTypeId: parseInt(selectedOption.id),
+     };
+     return updatedFields;
+   });
+
+   setTypeSelected((prevTypeSelected) => ({
+     ...prevTypeSelected,
+     [index]: event.target.value !== "",
+   }));
+
+   setIsRevenueTypeVisible(true);
+
+   const types = await api
+     .get(`revenue/${organisationId}/business-type/${selectedOption.id}`, {
+       headers: {
+         Authorization: `Bearer ${token}`,
+       },
+     })
+     .then((response) => {
+       return response.data;
+     })
+     .catch((error) => {
+       console.log(error);
+     });
+
+   setRevenueType((prevRevenueType) => ({
+     ...prevRevenueType,
+     [index]: {
+       types: types,
+     },
+   }));
+
+   setFields((prevFields) => {
+     const updatedFields = [...prevFields];
+     updatedFields[index].createdBy = userData[0]?.email;
+     updatedFields[index].billRevenues = [];
+     return updatedFields;
+   });
+ }
   function handleSizeChange(index, event) {
     const { name, value } = event.target;
     const selectedIndex = event.target.selectedIndex;
@@ -216,7 +266,7 @@ const AddBusinessProfile = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [organisationId, token]);
+  }, []);
 
   const redirectToBilling = (e) => {
     e.preventDefault();

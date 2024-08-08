@@ -29,11 +29,9 @@ const EnumerateBilling = () => {
     agencyName,
     agencyOption,
     agencyId,
-    existingCustomerAgencyId,
     setExistingCustomerFields,
     data,
     buildingName,
-    enumerationData,
     existingCustomerFields,
     enumerateFields,
     loadingBusiness,
@@ -51,40 +49,7 @@ const EnumerateBilling = () => {
   console.log("agencyName:", agencyName);
 
 
-  // useEffect(() => {
-  //   const fetchBusinessType = async () => {
-  //     if (Enum[0]?.businessTypeId) {
-  //       const updatedFields = [...existingCustomerFields];
-  //       updatedFields[0].businessTypeId = Enum[0]?.businessTypeId;
-  //       setExistingCustomerFields((prevState) => [
-  //         {
-  //           ...prevState[0], 
-  //           businessTypeId: Enum[0]?.businessTypeId, 
-  //         },
-  //         ...prevState.slice(1), 
-  //       ]);
-  //       try {
-  //         await api
-  //           .get(`enumeration/${organisationId}/business-types`, {
-  //             headers: {
-  //               Authorization: `Bearer ${token}`,
-  //             },
-  //           })
-  //           .then((response) => {
-  //             console.log("Business Size:", response.data);
-  //             setBusinessType(response.data);
-  //           })
-  //           .catch((error) => {
-  //             console.log(error);
-  //           });
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     }
-  //   };
 
-  //   fetchBusinessType();
-  // }, [Enum[0]?.businessTypeId]);
 
    const fetchBusinessType = useCallback(async () => {
      if (Enum[0]?.businessTypeId) {
@@ -116,45 +81,11 @@ const EnumerateBilling = () => {
        }
      }
    }, [Enum, existingCustomerFields]);
+   
     useEffect(() => {
       fetchBusinessType();
     }, [Enum[0]?.businessTypeId]);
-  // useEffect(() => {
-  //   const fetchBusinessSize = async () => {
-  //     if (Enum) {
-  //       const updatedFields = [...existingCustomerFields];
-  //       updatedFields[0].businessSizeId = Enum[0]?.businessSizeId;
-  //       setExistingCustomerFields((prevState) => [
-  //         {
-  //           ...prevState[0], 
-  //           businessSizeId: Enum[0]?.businessSizeId, 
-  //           createdBy: `${userData[0]?.email}`, 
-  //           agencyId: agencyId,
-  //         },
-  //         ...prevState.slice(1), 
-  //       ]);
-  //       try {
-  //         api
-  //           .get(`enumeration/${organisationId}/business-sizes`, {
-  //             headers: {
-  //               Authorization: `Bearer ${token}`,
-  //             },
-  //           })
-  //           .then((response) => {
-  //             console.log("businesssss", response.data);
-  //             setBusinessSize(response.data);
-  //           })
-  //           .catch((error) => {
-  //             console.log(error);
-  //           });
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchBusinessSize();
-  // }, [Enum[0]?.businessSizeId]);
+  
 const fetchBusinessSize = useCallback(async () => {
   if (Enum) {
     const updatedFields = [...existingCustomerFields];
@@ -201,35 +132,39 @@ useEffect(() => {
   };
 
   const [originalRevenues, setOriginalRevenues] = useState([]);
-  useEffect(() => {
+  const processRevenues = useCallback(() => {
     const processedRevenues = Enum.map((enumerate) =>
       removeDuplicates(enumerate?.billRevenues)
     );
 
     const flattenedRevenues = [].concat(...processedRevenues);
     const uniqueRevenues = removeDuplicates(flattenedRevenues);
-    console.log("orignal", uniqueRevenues);
+    console.log("original", uniqueRevenues);
     setOriginalRevenues(uniqueRevenues);
   }, [Enum]);
+
+  useEffect(() => {
+    processRevenues();
+  }, [processRevenues]);
   useEffect(() => {
     console.log("originalRevenues", originalRevenues);
   }, [originalRevenues]);
+   const fetchCategories = useCallback(async () => {
+     if (originalRevenues?.length > 0) {
+       setIsCategoriesLoading(true);
+
+       try {
+         const fetchRevenues = await fetchRevenueCategories(originalRevenues);
+         setCategories(fetchRevenues);
+         setIsCategoriesLoading(false);
+       } catch (error) {
+         console.error(error);
+         setIsCategoriesLoading(false);
+       }
+     }
+   }, [Enum, originalRevenues]);
   useEffect(() => {
     console.log("done getting");
-    const fetchCategories = async () => {
-      if (originalRevenues?.length > 0) {
-        setIsCategoriesLoading(true);
-
-        try {
-          const fetchRevenues = await fetchRevenueCategories(originalRevenues);
-          setCategories(fetchRevenues);
-          setIsCategoriesLoading(false);
-        } catch (error) {
-          console.error(error);
-          setIsCategoriesLoading(false);
-        }
-      }
-    };
 
     fetchCategories();
   }, [Enum, businessType]);
@@ -238,35 +173,33 @@ useEffect(() => {
     console.log("Entire Category:", categories);
   }, [categories]);
 
+   const fetchRevenues = useCallback(async () => {
+     const promises = Enum.map((field) => {
+       if (originalRevenues?.length > 0) {
+         return api
+           .get(
+             `revenue/${organisationId}/business-type/${field.businessTypeId}`,
+             {
+               headers: {
+                 Authorization: `Bearer ${token}`,
+               },
+             }
+           )
+           .then((response) => response.data);
+       } else {
+         return [];
+       }
+     });
 
+     Promise.all(promises)
+       .then((responses) => {
+         setRevenues(responses.flat());
+       })
+       .catch((error) => {
+         console.log(error);
+       });
+   }, [Enum, originalRevenues]);
   useEffect(() => {
-    const fetchRevenues = async () => {
-      const promises = Enum.map((field) => {
-        if (originalRevenues?.length > 0) {
-          return api
-            .get(
-              `revenue/${organisationId}/business-type/${field.businessTypeId}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            )
-            .then((response) => response.data);
-        } else {
-          return [];
-        }
-      });
-
-      Promise.all(promises)
-        .then((responses) => {
-          setRevenues(responses.flat());
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
-
     fetchRevenues();
   }, [Enum, originalRevenues]);
 
@@ -391,7 +324,7 @@ useEffect(() => {
               billAmount: selectedCategory?.amount,
               category: selectedCategory?.label,
             },
-          ], // add a new price to the array
+          ],
         },
         ...prevState.slice(1), 
       ]);

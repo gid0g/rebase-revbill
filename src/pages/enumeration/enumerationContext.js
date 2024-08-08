@@ -53,7 +53,9 @@ export const ContextProvider = ({ children }) => {
       dateCreated: new Date().toISOString(),
     },
   ]);
-
+  useEffect(() => {
+    console.log("Agency ID---------------->", agencyId);
+  }, [agencyId]);
   const [existingCustomerFields, setExistingCustomerFields] = useState([
     {
       agencyId:  0,
@@ -605,7 +607,7 @@ useEffect(()=>{
                     billId: String(billId),
                   }
                 })
-
+                window.location.reload()
               }, 2000);
             } else {
               toast.error(response.data.statusMessage, {
