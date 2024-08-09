@@ -54,10 +54,12 @@ export const ContextProvider = ({ children }) => {
       dateCreated: new Date().toISOString(),
     },
   ]);
-
+  useEffect(() => {
+    console.log("Agency ID---------------->", agencyId);
+  }, [agencyId]);
   const [existingCustomerFields, setExistingCustomerFields] = useState([
     {
-      agencyId: 0,
+      agencyId:  0,
       appliedDate: `${new Date().getFullYear()}`,
       BillRevenuePrices: [],
       businessTypeId: 0,
@@ -66,7 +68,7 @@ export const ContextProvider = ({ children }) => {
       createdBy: `${userData[0]?.email}`,
     },
   ]);
-
+  console.log("existingCustomerFields------------->", existingCustomerFields);
   const [enumerateFields, setEnumerateFields] = useState([]);
 
   const [enumerationPosition, setEnumerationPosition] = useState("new");
@@ -251,7 +253,9 @@ export const ContextProvider = ({ children }) => {
     createdBy: obj.createdBy,
   }));
 
-  useEffect(() => {
+useEffect(()=>{
+  console.log("Converted------------->", convertedField)
+},[convertedField])  useEffect(() => {
     console.log("Converted------------->", convertedField);
   }, [convertedField]);
   const submitPayerId = (e) => {
@@ -279,18 +283,12 @@ export const ContextProvider = ({ children }) => {
   const fullName = data?.fullName ? data.fullName : "";
 
   const nameInfo = splitFullName(fullName);
-
-  const payerTypeDto =
-    customerStatus == false
-      ? checkPayerType(data?.payerID)
-      : checkPayerType(data?.payerTypes?.payerTypeCode);
+  
+  const payerTypeDto = customerStatus == false ? checkPayerType(data?.payerID) : checkPayerType(data?.payerTypes?.payerTypeCode);
   const payerDto = data?.payerID;
-  const titleDto =
-    customerStatus == false ? 1 : checkTitle(data?.titles?.titleCode);
-  const genderDto =
-    customerStatus == false ? 1 : checkGender(data?.genders?.genderCode);
-  const maritalStatusDto =
-    customerStatus == false ? 1 : checkMaritalDtoStatus(data?.maritalStatuses);
+  const titleDto = customerStatus == false ? 1 : checkTitle(data?.titles?.titleCode);
+  const genderDto = customerStatus == false ? 1 : checkGender(data?.genders?.genderCode);
+  const maritalStatusDto = customerStatus == false ? 1 : checkMaritalDtoStatus(data?.maritalStatuses);
   const phoneNoDto = customerStatus == false ? data?.gsm : data?.phoneNo;
   const corporateNameDto = data.corporateName ? data.corporateName : "string";
   const firstNameDto = nameInfo.firstName;
@@ -299,6 +297,7 @@ export const ContextProvider = ({ children }) => {
   const addressDto = data.address;
   const emailDto = data.email;
   const suppliedPidDto = customerStatus == false ? true : enumerationStatus;
+  
 
   console.log("Customer Data:", data);
   console.log("existingPropertyForNewCustomer", existingPropertyForNewCustomer);
@@ -320,7 +319,7 @@ export const ContextProvider = ({ children }) => {
     dateCreated: new Date().toISOString(),
     createdBy: userData[0]?.email,
   };
-
+  
   console.log("createCustomerDto:", createCustomerDto);
 
   const chooseAgency = (status) => {
@@ -387,10 +386,10 @@ export const ContextProvider = ({ children }) => {
         return number[0];
       }
     }
-  };
-  useEffect(() => {
-    console.log("setting new propertyiDcontext------>", newPropertyId);
-  }, [newPropertyId]);
+  }
+  useEffect(()=>{
+    console.log("setting new propertyiDcontext------>",newPropertyId )
+  },[newPropertyId])
   const submitBusinessProfile = async (e) => {
     e.preventDefault();
     setLoadingBusiness(true);
@@ -418,7 +417,7 @@ export const ContextProvider = ({ children }) => {
       },
     };
 
-    console.log("FormData:", formData);
+    console.log("FormData------------->", formData);
 
     if (customerStatus == false) {
       console.log(
@@ -543,11 +542,12 @@ export const ContextProvider = ({ children }) => {
         });
     } else {
       setLoadingBusiness(true);
-
-      console.log("Data sent--------->", existingCustomerFields);
+  
+      console.log("Data:", existingCustomerFields);
       console.log("Selected Property:", selectedProperty);
       console.log("New Property:", newPropertyId);
       console.log("Selected Customer:", selectedCustomer);
+  
 
       //If customer exists => Bill Generation Api
       await api
@@ -599,8 +599,9 @@ export const ContextProvider = ({ children }) => {
                     customerId: selectedCustomer,
                     previewData: response?.data,
                     billId: String(billId),
-                  },
-                });
+                  }
+                })
+
               }, 2000);
             } else {
               toast.error(response.data.statusMessage, {
@@ -699,6 +700,7 @@ export const ContextProvider = ({ children }) => {
     locationAddress,
     setAgencyOption,
     ward,
+    setAgencyId,
     wardOption,
     streetOption,
     setStreetOption,

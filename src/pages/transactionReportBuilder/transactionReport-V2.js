@@ -258,7 +258,7 @@ const TransactionReportBuilder = () => {
     });
 
 
-    
+  const [bankSet, setBankSet]= useState([])
   const [reportData, setReportData] = useState([]);
 
   const convertDate = (date) => {
@@ -273,6 +273,10 @@ const TransactionReportBuilder = () => {
 
 const getBank = (id) => {
   const bank = banks.find(bank => bank.id == id);
+  return bank?.bankName;
+}
+const getBank2 = (id) => {
+  const bank = bankSet.find((bank) => bank.id == id);
   return bank?.bankName;
 }
 
@@ -316,7 +320,7 @@ const getBank = (id) => {
     },
     {
       name: "Bank",
-      selector: (row) => getBank(row.bankCode),
+      selector: (row) => getBank2(row.bankCode),
       sortable: true,
       grow: 2,
       style: {
@@ -352,6 +356,18 @@ const getBank = (id) => {
     },
   ];
 
+  useEffect(() => {
+    const getbanks= async ()=>{
+     const bankResponse = await api.get(`enumeration/banks`, {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+     });
+      console.log("Bank data---------", bankResponse)
+      setBankSet(bankResponse.data)
+    }
+    getbanks()
+  },[])
   const filteredItems = [...reportData.reverse()];
 
   const subHeaderComponentMemo = useMemo(() => {
@@ -447,25 +463,8 @@ const getBank = (id) => {
         }
       });
       console.log("response----", response)
-      setReportData([
-        {
-            paymentId: 2,
-            payerId: 7804839,
-            entryId: 12,
-            webGuid: "45385183716835016",
-            assessRef: "45385183716835016",
-            entryDate: "2024-01-04T13:57:05.687",
-            payerType: "Bank",
-            agency: "IJU AREA OFFICE",
-            revenue: "RADIO/ TV",
-            bankCode: 33,
-            amount: 1000.00,
-            bankAmount: 1000.00,
-            bankEntryDate: "2024-01-04T13:57:05.687",
-            bankTransId: 112233445,
-            bankTranRef: "033112233442"
-        }
-    ]);
+      setReportData(response.data);
+
       console.log("Data set:", response?.data);
 
     } catch(error){

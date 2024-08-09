@@ -182,17 +182,20 @@ const ValidatePayId = () => {
 
   function getFirstName(fullName) {
     const names = fullName.split(" ");
-    return names[0] || "";
+        return names.slice(1, -1).join(" ") || ""; //mid
+
   }
 
   function getMiddleName(fullName) {
     const names = fullName.split(" ");
-    return names.slice(1, -1).join(" ") || "";
+        return names.slice(-1)[0] || ""; //last
+
   }
 
   function getLastName(fullName) {
     const names = fullName.split(" ");
-    return names.slice(-1)[0] || "";
+        return names[0] || ""; //fir
+
   }
 
   const createCustomer = async (e) => {

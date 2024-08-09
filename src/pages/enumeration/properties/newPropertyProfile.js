@@ -23,7 +23,7 @@ const NewPropertyProfile = () => {
   const [validateForm, setValidateForm] = useState(true);
   const [isSubmittedForm,  setIsSubmittedForm] = useState(false);
   const [streets, setStreets] = useState([]);
-
+const [Agent,setAgent]= useState("")
   const [error, setError] = useState({
     spaceName: "",
     buildingNumber: "",
@@ -33,26 +33,18 @@ const NewPropertyProfile = () => {
   let navigate = useNavigate();
 
   const {
-    data,
-    setData,
-    payID,
-    setPayId,
     spaceName,
     setSpaceName,
     agencies,
     buildingNumber,
     setSpaceFloor,
-    customerStatus,
-    setCustomerStatus,
-    selectedCustomer,
-    setSelectedCustomer,
+    setAgencyId,
     setLocationAddress,
     ward,
     setWardOption,
     streetOption,
     setStreetOption,
     spaceIdentifier,
-    setEnumerationStatus,
     setBuildingNumber,
     setspaceIdentifierOption,
     spaceFloor,
@@ -61,9 +53,7 @@ const NewPropertyProfile = () => {
     wardOption,
     spaceIdentifierOption,
     agencyOption,
-    submitPayerId,
     setAgencyName,
-    loadingBusiness,
     newPropertyId,
     setNewPropertyId,
     setNewCustomerStatus,
@@ -193,6 +183,7 @@ const NewPropertyProfile = () => {
   const handleAgencyChange = async (agencyOption) => {
     setAgencyOption(agencyOption.value);
     setAgencyName(agencyOption.label);
+    setAgencyId(agencyOption.value);
     console.log("agencyId", agencyOption);
 
     try {
@@ -265,16 +256,28 @@ const NewPropertyProfile = () => {
       }))
     : "";
 
-    
-
+  useEffect(() => {
+    if (
+      typeof agencyOption === "object" &&
+      agencyOption !== null &&
+      !Array.isArray(agencyOption)
+    ) {
+      setAgent(agencyOption.agencyId);
+    }
+  }, [agencyOption]);
+  useEffect(() => {
+    console.log("Agent", Agent)
+    setAgencyId(Agent);
+    },[Agent])
     const handleNewPropertyEnumeration = async (e) => {
 
       e.preventDefault();
       const formattedLocationAddress = buildingNumber + " " + streetOption.label
-      console.log("formattedLocationAddress",formattedLocationAddress)
+      console.log("formattedLocationAddress", formattedLocationAddress)
+    
       setNewCustomerStatus(true);
       const createProperty = {
-        AgencyId: agencyOption,
+        AgencyId: Agent!==""? Agent : agencyOption,
         SpaceIdentifierId: spaceIdentifierOption,
         StreetId: streetOption.value,
         wardId:wardId,
@@ -285,7 +288,7 @@ const NewPropertyProfile = () => {
         CreatedBy: userData[0]?.email,
         DateCreated: new Date().toISOString()
       }
-
+console.log("propertytobecreated-----------",createProperty)
       try {
         const response = await api.post(`enumeration/${organisationId}/property`,
           createProperty,
@@ -347,9 +350,7 @@ const NewPropertyProfile = () => {
           setIsSubmittedForm(true);
       }
     }
-useEffect(()=>{
-  console.log("agencies ", agencies)
-},[agencies])
+
   const getRoleAgency = (storedAgencyId) => {
     const filteredAgency = agencies.find(agency => agency.agencyId == storedAgencyId);
     setAgencyOption(filteredAgency);
@@ -376,7 +377,6 @@ useEffect(()=>{
     <AppSettings.Consumer>
       {({ cartIsShown, showModalHandler, hideModalHandler }) => (
         <div>
-
           <div className="mb-3 flex justify-content-between">
             <div className=" ">
               <h3 className=" mb-0">New Enumeration</h3>
@@ -458,26 +458,29 @@ useEffect(()=>{
                         </label>
 
                         {roleId != 1 && roleId != 2 && (
-                            <input
-                              className="form-control"
-                              type="text"
-                              name="Agency"
-                              placeholder="Select Agency"
-                              value={getRoleAgency(agencyId)}
-                              readOnly
-                            />
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="Agency"
+                            placeholder="Select Agency"
+                            value={getRoleAgency(agencyId)}
+                         
+                            readOnly
+                          />
                         )}
 
                         {roleId == 2 && (
                           <Select
                             className="basic-single"
                             classNamePrefix="select"
-                            defaultValue={transformedAgencyData.find(option => option.value == agencyId)}
+                            defaultValue={transformedAgencyData.find(
+                              (option) => option.value == agencyId
+                            )}
                             isSearchable={true}
                             name="Agency"
                             options={transformedAgencyData}
                             onChange={handleAgencyChange}
-                          />   
+                          />
                         )}
 
                         {roleId == 1 && (
@@ -489,7 +492,7 @@ useEffect(()=>{
                             name="Agency"
                             options={transformedAgencyData}
                             onChange={handleAgencyChange}
-                          />   
+                          />
                         )}
                       </div>
                     </div>
@@ -504,7 +507,7 @@ useEffect(()=>{
                         )}
                         <input
                           className="form-control"
-                          type="number"
+                          type="text"
                           name="buildingNumber"
                           placeholder="Building Number"
                           onChange={handleBuildingNo}
@@ -580,7 +583,6 @@ useEffect(()=>{
                         />
                       </div>
                     </div> */}
-
                   </div>
                 </div>
 
@@ -601,22 +603,22 @@ useEffect(()=>{
               </fieldset>
             </form>
           </div>
-            <div className="modal fade" id="modalAlert">
-              <div className="modal-dialog">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h4 className="modal-title">Payer Id</h4>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-hidden="true"
-                    ></button>
-                  </div>
-                  <FormWizard />
+          <div className="modal fade" id="modalAlert">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h4 className="modal-title">Payer Id</h4>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-hidden="true"
+                  ></button>
                 </div>
+                <FormWizard />
               </div>
             </div>
+          </div>
           <ToastContainer />
         </div>
       )}

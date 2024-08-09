@@ -11,7 +11,6 @@ import { Modal } from "bootstrap";
 import "react-activity/dist/library.css";
 import { ToastContainer, toast } from "react-toastify";
 
-
 const RevenuePrices = () => {
   const token = sessionStorage.getItem("myToken");
   const appSettings = useContext(AppSettings);
@@ -25,6 +24,9 @@ const RevenuePrices = () => {
   const [editRow, setEditRow] = useState(null);
   const [itemId, setItemId] = useState("");
   const [revenues, setRevenues] = useState([]);
+  const [businessType, setBusinessType] = useState([]);
+  // const [typebasedRevenue, setTypebasedRevenue] = useState([]);
+  const [type, setType] = useState("");
   const [revenueId, setRevenueId] = useState(null);
   const [businessSize, setBusinessSize] = useState(null);
   const [businessSizeId, setBusinessSizeId] = useState(null);
@@ -38,24 +40,24 @@ const RevenuePrices = () => {
   ////////////////////
   const authCloseModal = (elementId) => {
     const myModal = new Modal(document.getElementById(elementId));
-  
+
     myModal.show();
-  
-    myModal._element.addEventListener('shown.bs.modal', () => {
+
+    myModal._element.addEventListener("shown.bs.modal", () => {
       clearTimeout(myModal._element.hideInterval);
       const id = setTimeout(() => {
         myModal.hide();
       });
       myModal._element.hideInterval = id;
-  
-      const backdropElement = document.querySelector('.modal-backdrop.show');
+
+      const backdropElement = document.querySelector(".modal-backdrop.show");
       if (backdropElement) {
         backdropElement.remove();
       }
     });
-  
+
     setModalInstance(myModal);
-  }
+  };
   ////////////////////
   const transformedRevenueData = revenues
     ? revenues.map((item) => ({
@@ -63,7 +65,13 @@ const RevenuePrices = () => {
         value: item.revenueId,
       }))
     : "";
-  
+  const transformedTypeData = businessType
+    ? businessType.map((item) => ({
+        label: item.businessTypeName,
+        value: item.id,
+      }))
+    : "";
+
   const transformedCategoryData = category
     ? category?.map((item) => ({
         label: item.categoryName,
@@ -80,7 +88,7 @@ const RevenuePrices = () => {
         value: item.id,
       }))
     : "";
-  
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditRow((prevEditData) => ({
@@ -96,12 +104,27 @@ const RevenuePrices = () => {
   const handleRevenueChange = (selectedRevenue) => {
     setRevenueId(selectedRevenue.value);
   };
+  const handleTypeChange = (selectedType) => {
+    setType(selectedType.value);
+  };
 
   const handleCategory = (selectedCategory) => {
     setCategoryId(selectedCategory.value);
     setCategoryName(selectedCategory.label);
   };
-
+  // useEffect(() => {
+  //   setRevenueId(null);
+  //   const filteredRevenues = revenues.filter(
+  //     (revenues) => revenues.businessTypeId === type
+  //   );
+  //   const transformedRevenueData2 = filteredRevenues
+  //     ? filteredRevenues.map((item) => ({
+  //         label: item.revenueName,
+  //         value: item.revenueId,
+  //       }))
+  //     : "";
+  //   setTypebasedRevenue(transformedRevenueData2);
+  // }, [type]);
   const handleChange = (e) => {
     setAmount(e.target.value);
   };
@@ -180,18 +203,23 @@ const RevenuePrices = () => {
   };
 
   const getTableRevenue = (revenueId) => {
-    if(revenueId) {
-      const revenueData = data.filter(item => item?.revenueId === revenueId);
-      const revenue = revenues.filter(revenue => revenue?.revenueId === revenueData[0]?.revenueId);
-      return revenue[0]?.revenueName != undefined ? revenue[0]?.revenueName : "None";
+    if (revenueId) {
+      const revenueData = data.filter((item) => item?.revenueId === revenueId);
+      const revenue = revenues.filter(
+        (revenue) => revenue?.revenueId === revenueData[0]?.revenueId
+      );
+      return revenue[0]?.revenueName != undefined
+        ? revenue[0]?.revenueName
+        : "None";
     }
-  }
+  };
 
   const getRevenue = (revenueId) => {
-    const revenue = revenues.filter(revenue => revenue?.revenueId === revenueId);
+    const revenue = revenues.filter(
+      (revenue) => revenue?.revenueId === revenueId
+    );
     setRevenueName(revenue[0]?.revenueName);
-  }
-  
+  };
 
   const addNewPrice = async (e) => {
     setLoading(true);
@@ -231,11 +259,11 @@ const RevenuePrices = () => {
             theme: "colored",
           });
         }
-        authCloseModal("addCategory")
- setTimeout(()=>{
+        authCloseModal("addCategory");
+        setTimeout(() => {
           window.location.reload();
-        },1000)
-                setLoading(false);
+        }, 1000);
+        setLoading(false);
         return true;
       })
       .catch((error) => {
@@ -289,7 +317,7 @@ const RevenuePrices = () => {
         }
       )
       .then((response) => {
-        console.log(response)
+        console.log(response);
         if (response.status === 200) {
           setLoading(false);
           toast.success(response.data, {
@@ -303,17 +331,17 @@ const RevenuePrices = () => {
             theme: "colored",
           });
         }
-        authCloseModal("editRevenuePrice")
-       setTimeout(()=>{
+        authCloseModal("editRevenuePrice");
+        setTimeout(() => {
           window.location.reload();
-        },1000)
-                setLoading(false);
+        }, 1000);
+        setLoading(false);
         // return true;
       })
       .catch((error) => {
         setLoading(false);
         console.log("error", error);
-        toast.error(error.response.data.WardName[0], {
+        toast.error(error.response.data, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: true,
@@ -339,7 +367,7 @@ const RevenuePrices = () => {
         setFilterText("");
       }
     };
- 
+
     return (
       <FilterComponent
         onFilter={(e) => setFilterText(e.target.value)}
@@ -359,12 +387,29 @@ const RevenuePrices = () => {
       })
       .then((response) => {
         setPending(false);
+        console.log("Revenue Data------------>", response.data);
         setData(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [token, data]);
+  }, [token]);
+  useEffect(() => {
+    api
+      .get(`enumeration/${organisationId}/business-types`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setPending(false);
+        console.log("Business Data------------>", response.data);
+        setBusinessType(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [token]);
 
   useEffect(() => {
     api
@@ -374,6 +419,7 @@ const RevenuePrices = () => {
         },
       })
       .then((response) => {
+        console.log("Revenues----->", response.data);
         setRevenues(response.data);
       })
       .catch((error) => {
@@ -383,16 +429,11 @@ const RevenuePrices = () => {
 
   useEffect(() => {
     api
-      .get(
-        `revenue/${organisationId}/business-size/${
-          businessSizeId ? businessSizeId : "0"
-        }`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      .get(`revenue/${organisationId}/categories`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         console.log("response", response);
         setCategory(response.data);
@@ -485,6 +526,20 @@ const RevenuePrices = () => {
                   <div className=" p-2 ">
                     <form onSubmit={addNewPrice}>
                       <div className="row gx-5">
+                        {/* <div className="col mb-3">
+                          <label className="form-label " htmlFor="revenue">
+                            Select Business Type
+                          </label>
+                          <Select
+                            id="revenue"
+                            className="basic-single"
+                            classNamePrefix="Please Select Billing Type"
+                            name="revenue"
+                            defaultValue="Select Revenue"
+                            options={transformedTypeData}
+                            onChange={handleTypeChange}
+                          />
+                        </div> */}
                         <div className="col mb-3">
                           <label className="form-label " htmlFor="revenue">
                             Select Revenue Type
@@ -568,21 +623,21 @@ const RevenuePrices = () => {
         </div>
 
         <div className="modal fade" id="editRevenuePrice">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h4 className="modal-title">
-                Edit Amount for Category{" "}
-                {editRow ? editRow?.categoryName : " "}
-              </h4>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-hidden="true"
-              ></button>
-            </div>     
-            <div className="modal-body">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h4 className="modal-title">
+                  Edit Amount for Category{" "}
+                  {editRow ? editRow?.categoryName : " "}
+                </h4>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-hidden="true"
+                ></button>
+              </div>
+              <div className="modal-body">
                 <ToastContainer />
                 <div className="  ">
                   <div className=" p-2 ">
@@ -609,13 +664,12 @@ const RevenuePrices = () => {
                           <label className="form-label " htmlFor="businessSize">
                             Select Business Size
                           </label>
-                          
+
                           <input
                             name="business size"
                             type="text"
                             className="form-control"
-                            value={editRow ? editRow.businessSize
-                              : ""}
+                            value={editRow ? editRow.businessSize : ""}
                             placeholder="Enter Amount"
                             required
                             readOnly
@@ -668,10 +722,9 @@ const RevenuePrices = () => {
                   </div>
                 </div>
               </div>
+            </div>
           </div>
         </div>
-    </div>
-        
       </div>
       <button
         style={{ marginTop: "20px" }}

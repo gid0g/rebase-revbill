@@ -1,5 +1,10 @@
-
-import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
+} from "react";
 import { Link } from "react-router-dom";
 import api from "../../axios/custom";
 import Select from "react-select";
@@ -51,7 +56,20 @@ const Billings = () => {
       createdBy: userData[0]?.email,
     },
   ]);
-
+  const [nonfields, setNonFields] = useState([
+    {
+      agencyId: 0,
+      revenueId: 0,
+      frequencyId: 0,
+      billAmount: 0,
+      appliedDate: `${new Date().getFullYear()}`,
+      category: "string",
+      businessType: "string",
+      businessSize: "string",
+      dateCreated: currentDate,
+      createdBy: userData[0]?.email,
+    },
+  ]);
   const [checkedRevenues, setCheckedRevenues] = useState([]);
   const [categories, setCategories] = useState([]);
   const [categoryAmounts, setCategoryAmounts] = useState([]);
@@ -89,12 +107,12 @@ const Billings = () => {
         value: item.id,
       }))
     : "";
-//////////////////////////
-          useEffect(()=>{
-            console.log("allCustomers", allCustomers)
-            console.log("transformedAllCustomerData", transformedAllCustomerData)
-          },[allCustomers])    
-///////////////////////
+  //////////////////////////
+  useEffect(() => {
+    console.log("allCustomers", allCustomers);
+    console.log("transformedAllCustomerData", transformedAllCustomerData);
+  }, [allCustomers]);
+  ///////////////////////
   const transformedCategoryData = (idx) => {
     return categoryType[idx]?.types.map((category) => ({
       label: category.categoryName,
@@ -170,22 +188,35 @@ const Billings = () => {
         businessSizeId: 0,
         dateCreated: currentDate,
         createdBy: userData[0]?.email,
-      }]);
+      },
+    ]);
+    setNonFields([
+      {
+        agencyId: 0,
+        revenueId: 0,
+        frequencyId: 0,
+        billAmount: 0,
+        appliedDate: `${new Date().getFullYear()}`,
+        category: "string",
+        businessType: "string",
+        businessSize: "string",
+        dateCreated: currentDate,
+        createdBy: userData[0]?.email,
+      },
+    ]);
 
-       setCheckedRevenues([]);
-       setCategories([]);
-       setCategoryAmounts([]);
-       setCategoryIndex(0);
-       setIsRevenueTypeVisible(false);
-       setIsAmountVisible(false);
-       setIsCategoriesLoading(false);
+    setCheckedRevenues([]);
+    setCategories([]);
+    setCategoryAmounts([]);
+    setCategoryIndex(0);
+    setIsRevenueTypeVisible(false);
+    setIsAmountVisible(false);
+    setIsCategoriesLoading(false);
   };
   const handleCustomerChange = (selectedCustomer) => {
     setSelectedCustomer(selectedCustomer.value);
     console.log("customer", selectedCustomer);
   };
-
-
 
   // useEffect to handle API requests when checkbox selection changes
   useEffect(() => {
@@ -202,23 +233,26 @@ const Billings = () => {
           setIsCategoriesLoading(false);
         }
       }
-    }
+    };
 
     fetchCategories();
   }, [checkedRevenues]);
-  
-//////////////////////////////
 
-/////////////////////////////
+  //////////////////////////////
+
+  /////////////////////////////
 
   const fetchRevenueCategories = async (revenueIds) => {
-    console.log("Organization ID:", organisationId)
-    console.log("Revenue ID:", revenueIds)
-    const apiEndpoints = revenueIds.map(revenueId => `revenue/${organisationId}/revenueprice-revenue/${revenueId}`);
-  
+    console.log("Organization ID:", organisationId);
+    console.log("Revenue ID:", revenueIds);
+    const apiEndpoints = revenueIds.map(
+      (revenueId) =>
+        `revenue/${organisationId}/revenueprice-revenue/${revenueId}`
+    );
+
     try {
       const responses = await Promise.all(
-        apiEndpoints.map(apiEndpoint =>
+        apiEndpoints.map((apiEndpoint) =>
           api.get(apiEndpoint, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -228,29 +262,31 @@ const Billings = () => {
       );
 
       console.log("Categories", responses);
-      
-      const fetchedRevenuesCategories = responses.map(response => response.data);
+
+      const fetchedRevenuesCategories = responses.map(
+        (response) => response.data
+      );
       return fetchedRevenuesCategories;
     } catch (error) {
       throw error;
     }
-  }
-
+  };
 
   const [errors, setErrors] = useState({});
 
   const validateField = (field) => {
     let fieldErrors = {};
-    if (field.agencyId === 0) {
-      fieldErrors.agencyId = 'Agency is required';
-    }
+  
+      if (field.agencyId === 0) {
+        fieldErrors.agencyId = "Agency is required";
+      }
 
     if (field.businessTypeId === 0) {
-      fieldErrors.businessTypeId = 'Business Type is required';
+      fieldErrors.businessTypeId = "Business Type is required";
     }
 
     if (field.businessSizeId === 0) {
-      fieldErrors.businessSizeId = 'Business Size is required';
+      fieldErrors.businessSizeId = "Business Size is required";
     }
 
     return fieldErrors;
@@ -258,33 +294,47 @@ const Billings = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    fields.forEach((field, index) => {
-      const fieldErrors = validateField(field);
-      if (Object.keys(fieldErrors).length > 0) {
-        newErrors[`Field ${index + 1}`] = fieldErrors;
-      }
-    });
-    setErrors(newErrors);
+    if (billingTypes == 1) {  
+      fields.forEach((field, index) => {
+        const fieldErrors = validateField(field);
+        if (Object.keys(fieldErrors).length > 0) {
+          newErrors[`Field ${index + 1}`] = fieldErrors;
+        }
+      });
+    }
+    else if (billingTypes == 2) {
+         nonfields.forEach((field, index) => {
+           const fieldErrors = validateField(field);
+           if (Object.keys(fieldErrors).length > 0) {
+             newErrors[`Field ${index + 1}`] = fieldErrors;
+           }
+         });
+    } setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-
-
-
   const handleTypeChange = async (selectedBusinessType, idx) => {
-
     // setting revenueType to default until business type changes
     setCategories([]);
+    if (billingTypes == 1) {
+      const updatedFields = [...fields];
+      updatedFields[idx].businessTypeId = selectedBusinessType.value;
+      setFields(updatedFields);
+    }
+    else if (billingTypes == 2) {
+      const updatedFields = [...nonfields];
+      updatedFields[idx].businessType = selectedBusinessType.value;
+      setNonFields(updatedFields);
+    }
     
-    const updatedFields = [...fields];
-    updatedFields[idx].businessTypeId = selectedBusinessType.value;
-    setFields(updatedFields);
-    console.log("Selected Business Type:", selectedBusinessType);
+      console.log("Selected Business Type:", selectedBusinessType);
 
     setIsRevenueTypeVisible(true);
     const types = await api
       .get(
-        `revenue/${organisationId}/business-type/${fields[idx].businessTypeId}`,
+        `revenue/${organisationId}/business-type/${
+          fields[idx].businessTypeId || nonfields[idx].businessType
+        }`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -292,7 +342,7 @@ const Billings = () => {
         }
       )
       .then((response) => {
-        console.log("got revenuetypes:", response.data)
+        console.log("got revenuetypes:", response.data);
         return response.data;
       })
       .catch((error) => {
@@ -308,17 +358,24 @@ const Billings = () => {
   };
 
   const handleSizeChange = async (selectedBusinessSize, idx) => {
-    const updatedFields = [...fields];
-    console.log("Updated Fields", updatedFields);
     console.log("Index Fields", idx);
-
-    updatedFields[idx].businessSizeId = selectedBusinessSize.value;
-    setFields(updatedFields);
-
+    if (billingTypes == 1) {
+      const updatedFields = [...fields];
+    console.log("Updated Fields", updatedFields);
+      updatedFields[idx].businessSizeId = selectedBusinessSize.value;
+      setFields(updatedFields);
+    } else if (billingTypes == 2) {
+      const updatedFields = [...nonfields];
+    console.log("Updated Fields", updatedFields);
+      updatedFields[idx].businessSize = selectedBusinessSize.value;
+      setNonFields(updatedFields);
+    }
 
     const types = await api
       .get(
-        `revenue/${organisationId}/business-size/${fields[idx].businessSizeId}`,
+        `revenue/${organisationId}/business-size/${
+          fields[idx].businessSizeId || nonfields[idx].businessSize
+        }`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -338,63 +395,75 @@ const Billings = () => {
         types: types,
       },
     }));
-
   };
 
   const handleFrequencyChange = (selectedFrequency, idx) => {
-    const updatedFields = [...fields];
+    const updatedFields = [...nonfields];
     updatedFields[idx].frequencyId = selectedFrequency.value;
-    setFields(updatedFields);
+    setNonFields(updatedFields);
   };
 
   const handleAgencyChange = (selectedAgency, idx) => {
-    const updatedFields = [...fields];
-    updatedFields[idx].agencyId = selectedAgency.value;
-    setFields(updatedFields);
+    if (billingTypes == 1) {
+        const updatedFields = [...fields];
+        updatedFields[idx].agencyId = selectedAgency.value;
+        setFields(updatedFields);
+    } else if (billingTypes == 2) {
+      
+      const updatedFields = [...nonfields];
+      updatedFields[idx].agencyId = selectedAgency.value;
+      setNonFields(updatedFields);
+    }
   };
 
-function handleRevenueChange(idx, event) {
-
+  function handleRevenueChange(idx, event) {
     const { checked } = event.target;
     const value = event.target.value;
-    const updatedFields = [...fields];
-
-    console.log("Updated Fields:", updatedFields);
-    updatedFields[idx].createdBy = userData[0]?.email;
-    setFields(updatedFields);   
-    
-    setSelectedRevenueItems(prevSelectedItems => 
-      [
-        ...prevSelectedItems, 
-        updatedFields[idx].revenueId
+    if (billingTypes == 1) {
+      const updatedFields = [...fields];
+      console.log("Updated Fields:", updatedFields);
+      updatedFields[idx].createdBy = userData[0]?.email;
+      setFields(updatedFields);
+      setSelectedRevenueItems((prevSelectedItems) => [
+        ...prevSelectedItems,
+        updatedFields[idx].revenueId,
       ]);
+    } else if (billingTypes == 2) { 
+         const updatedFields = [...nonfields];
+         console.log("Updated Fields:", updatedFields);
+         updatedFields[idx].createdBy = userData[0]?.email;
+         setNonFields(updatedFields);
+         setSelectedRevenueItems((prevSelectedItems) => [
+           ...prevSelectedItems,
+           updatedFields[idx].revenueId,
+         ]);
+    }
 
-      console.log("Checked Revenues:", checkedRevenues);
+    console.log("Checked Revenues:", checkedRevenues);
   }
 
-
-  
   const handleCheckedRevenueChange = (revenueId) => {
-    if(revenueId) {
+    if (revenueId) {
       setCheckedRevenues((prevCheckedRevenues) => {
         if (prevCheckedRevenues.includes(revenueId)) {
-          const filteredCheckedCategories = prevCheckedRevenues.filter(id => id !== revenueId);
+          const filteredCheckedCategories = prevCheckedRevenues.filter(
+            (id) => id !== revenueId
+          );
           return filteredCheckedCategories;
         } else {
           return [...prevCheckedRevenues, revenueId];
         }
       });
-
     }
 
     console.log("Checked Revenues:", checkedRevenues);
-  }
-  
+  };
 
   const transformedRevenueCategoryOptions = (index) => {
-    
-    const filteredCategories = categories.map(category => {
-      const filteredData = category.filter(item => checkedRevenues.includes(item.revenueId))
+    const filteredCategories = categories.map((category) => {
+      const filteredData = category.filter((item) =>
+        checkedRevenues.includes(item.revenueId)
+      );
       return {
         data: filteredData,
       };
@@ -410,138 +479,149 @@ function handleRevenueChange(idx, event) {
       amount: item.amount,
       revenue: item.revenueId,
     }));
-  
+
     return options;
   };
 
-
   const handleCategoryChange = (selectedCategory, index) => {
-    const updatedFields = [...fields];
-   
-    if(selectedCategory) {
-
+    
+    if (selectedCategory) {
       const billRevenuePrice = {
         revenueId: selectedCategory?.revenue,
         billAmount: selectedCategory?.amount,
-        category: selectedCategory?.label
+        category: selectedCategory?.label,
+      };
+      if (billingTypes == 1) {
+        const updatedFields = [...fields];
+        updatedFields[0].BillRevenuePrices = [
+          ...updatedFields[0].BillRevenuePrices,
+          billRevenuePrice,
+        ];
+      } else if (billingTypes == 2) { 
+           const updatedFields = [...nonfields];
+           updatedFields[0].billAmount = selectedCategory?.amount;
+           updatedFields[0].category = selectedCategory?.label;
+        updatedFields[0].revenueId = selectedCategory?.revenue;
+        console.log("Updated Fields:", updatedFields);
       }
-
-      updatedFields[0].BillRevenuePrices = [
-        ...updatedFields[0].BillRevenuePrices,
-        billRevenuePrice,
-      ];
-    
       // Update the categoryAmounts array with the amount for the current category
       const newCategoryAmounts = [...categoryAmounts];
       newCategoryAmounts[index] = selectedCategory?.amount;
       setCategoryAmounts(newCategoryAmounts);
-    
-      setIsAmountVisible(true);
 
+      setIsAmountVisible(true);
     }
   };
-
-
-
+  useEffect(() => {
+  console.log("current Non:", nonfields)
+}, [nonfields])
   //submit function for generating Property bill
   const submitHandler = async (e) => {
     e.preventDefault();
 
     const isValid = validateForm();
-    const confirmation = window.confirm("Do you want to continue to generate bill?");
-    if (isValid && confirmation) {    
+    const confirmation = window.confirm(
+      "Do you want to continue to generate bill?"
+    );
+    if (isValid && confirmation) {
       const formData = {
         createPropertyBillDto: fields,
-      }
-     
-        console.log("see", formData);
-      console.log(organisationId,selectedProperty,selectedCustomer)
+      };
 
-      try {
-      setLoading(true);
-      const response = await api.post(
-        `billing/${organisationId}/generate-bill/property/${selectedProperty}/customer/${selectedCustomer}`, formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      console.log("see------------>", formData);
+      console.log(organisationId, selectedProperty, selectedCustomer);
+      console.log(
+        "api called--------->",
+        `billing/${organisationId}/generate-bill/property/${selectedProperty}/customer/${selectedCustomer}`
       );
-  
-      console.log("response--->", response);
-  
-      if (response.status === 200 || response.status === 403) {
-        if (response.data && response?.data?.statusMessage != "Bill(s) Exists!") {
-          toast.success(response.data.statusMessage, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
+      try {
+        setLoading(true);
+        const response = await api.post(
+          `billing/${organisationId}/generate-bill/property/${selectedProperty}/customer/${selectedCustomer}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-          setTimeout(() => {
-            navigate("/home/billing/previewbill/", {
-              state: {
-                customerId: selectedCustomer,
-                previewData: response?.data
-              }
-            })
-          }, 2000);
-          
-        } else {
-          toast.error(response.data.statusMessage, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
+        console.log("response--->", response);
+
+        if (response.status === 200 || response.status === 403) {
+          if (
+            response.data &&
+            response?.data?.statusMessage != "Bill(s) Exists!"
+          ) {
+            toast.success(response.data.statusMessage, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+
+            setTimeout(() => {
+              navigate("/home/billing/previewbill/", {
+                state: {
+                  customerId: selectedCustomer,
+                  previewData: response?.data,
+                },
+              });
+            }, 2000);
+          } else {
+            toast.error(response.data.statusMessage, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
         }
-      }
-    } catch (error) {
-      const { response } = error;
-      
-      toast.error(response?.data || "An error occurred", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    } finally {
-      setLoading(false);
-    }
+      } catch (error) {
+        const { response } = error;
 
-  }
-};
-  
+        toast.error(response?.data || "An error occurred", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   //submit function for generating Non-Property bill
 
   const submitNonPropertyHandler = async (e) => {
     e.preventDefault();
     const isValid = validateForm();
-    const confirmation = window.confirm("Do you want to continue to generate bill?");
+    const confirmation = window.confirm(
+      "Do you want to continue to generate bill?"
+    );
 
-    console.log("Non-Fields:", fields);
-    if (isValid && confirmation) {    
+    console.log("Non-Fields----------------------->", nonfields);
+    if (isValid && confirmation) {
       const formData = {
-        createNonPropertyBillDto: fields,
-      }
+        createNonPropertyBillDto: nonfields,
+      };
 
       try {
         setLoading(true);
-    
+
         const response = await api.post(
           `billing/${organisationId}/generate-bill/customer/${selectedCustomer}`,
           formData,
@@ -551,7 +631,7 @@ function handleRevenueChange(idx, event) {
             },
           }
         );
-    
+
         if (response.status === 200) {
           if (response.data) {
             toastNotification(response.data.message, "success");
@@ -559,22 +639,22 @@ function handleRevenueChange(idx, event) {
               navigate("/home/billing/previewbill/", {
                 state: {
                   customerId: selectedCustomer,
-                  previewData: response?.data
-                }
-              })
+                  previewData: response?.data,
+                },
+              });
             }, 2000);
-
           } else if (response.data) {
             toastNotification(response.data.message, "success");
           }
         }
         setLoading(false);
       } catch (error) {
-        handleErrors(error);
+        // handleErrors(error);
+          setLoading(false);
       }
     }
   };
-  
+
   const toastNotification = (message, type) => {
     toast[type](message, {
       position: "top-right",
@@ -587,7 +667,7 @@ function handleRevenueChange(idx, event) {
       theme: "colored",
     });
   };
-  
+
   const handleErrors = (error) => {
     console.log("context", error);
     setLoading(false);
@@ -601,7 +681,6 @@ function handleRevenueChange(idx, event) {
       toastNotification(errorMessage, "error");
     });
   };
-  
 
   //fetch business-sizes
   useEffect(() => {
@@ -712,8 +791,8 @@ function handleRevenueChange(idx, event) {
           }
         )
         .then((response) => {
-            console.log("customers",response.data)
-            console.log("customers",selectedProperty)
+          console.log("customers", response.data);
+          console.log("customers", selectedProperty);
           setCorrespondingCustomers(response.data);
         })
         .catch((error) => {
@@ -734,12 +813,14 @@ function handleRevenueChange(idx, event) {
       </ol>
       <h1 className="page-header mb-3">Billing</h1>
       {Object.entries(errors).map(([field, fieldErrors]) => (
-          <div key={field} className="bg-red-600 py-4 px-6 rounded-md ">
-            {Object.entries(fieldErrors).map(([key, value]) => (
-              <p key={key} className="text-white text-sm">{value}</p>
-            ))}
-          </div>
-        ))}
+        <div key={field} className="bg-red-600 py-4 px-6 rounded-md ">
+          {Object.entries(fieldErrors).map(([key, value]) => (
+            <p key={key} className="text-white text-sm">
+              {value}
+            </p>
+          ))}
+        </div>
+      ))}
       <hr />
       <div className="col-span-6 mb-3">
         <label className=" block text-lg font-bold leading-6 text-gray-900">
@@ -877,8 +958,14 @@ function handleRevenueChange(idx, event) {
 
                     {isRevenueTypeVisible && (
                       <fieldset className="col-span-6 mt-3 ">
-                        <legend title="Multiple Revenue type/code can be selected"  className="text-lg font-medium leading-6 text-gray-900">
-                          Revenue Type/Code <pre className="text-xs">(Multiple Revenue type/code can be selected)</pre>
+                        <legend
+                          title="Multiple Revenue type/code can be selected"
+                          className="text-lg font-medium leading-6 text-gray-900"
+                        >
+                          Revenue Type/Code{" "}
+                          <pre className="text-xs">
+                            (Multiple Revenue type/code can be selected)
+                          </pre>
                         </legend>
                         <div className="mt-2 gap-x-5 flex overflow-auto">
                           {revenueType[idx]?.types?.map((revenue) => {
@@ -892,10 +979,14 @@ function handleRevenueChange(idx, event) {
                                   type="checkbox"
                                   name={`revenueId${idx}`}
                                   value={revenue.revenueId}
-                                  checked={checkedRevenues.includes(revenue.revenueId)}
+                                  checked={checkedRevenues.includes(
+                                    revenue.revenueId
+                                  )}
                                   onChange={(event) => {
                                     handleRevenueChange(idx, event);
-                                    handleCheckedRevenueChange(revenue.revenueId);
+                                    handleCheckedRevenueChange(
+                                      revenue.revenueId
+                                    );
                                   }}
                                 />
                                 <label
@@ -909,55 +1000,56 @@ function handleRevenueChange(idx, event) {
                           })}
                         </div>
 
-                        {categories && 
-                            categories.length != 0 && 
-                              categories.map((category, index) => (
-                                
-                          <div
-                            key={index}
-                            className="flex gap-3 mt-4"
-                          >
-                            <div className="w-50">
-                              <label
-                                htmlFor={`category_${index}`}
-                                className="block text-lg font-medium leading-6 text-gray-900"
-                              >
-                                Category
-                              </label>
-                              <div className="mt-2">
-                                <Select
-                                  id={`category_${index}`}
-                                  className="basic-single w-50"
-                                  classNamePrefix="select"
-                                  name={`category_${index}`}
-                                  options={transformedRevenueCategoryOptions(index)}
-                                  onChange={(selectedOption) => {
-                                    handleCategoryChange(selectedOption, index);
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            {isAmountVisible && (
+                        {categories &&
+                          categories.length != 0 &&
+                          categories.map((category, index) => (
+                            <div key={index} className="flex gap-3 mt-4">
                               <div className="w-50">
                                 <label
-                                  htmlFor={`amount_${index}`}
+                                  htmlFor={`category_${index}`}
                                   className="block text-lg font-medium leading-6 text-gray-900"
                                 >
-                                  Amount
+                                  Category
                                 </label>
                                 <div className="mt-2">
-                                  <input
-                                    id={`amount_${index}`}
-                                    className="form-control"
-                                    value={categoryAmounts[index]}
-                                    name={`amount_${index}`}
-                                    readOnly
+                                  <Select
+                                    id={`category_${index}`}
+                                    className="basic-single w-50"
+                                    classNamePrefix="select"
+                                    name={`category_${index}`}
+                                    options={transformedRevenueCategoryOptions(
+                                      index
+                                    )}
+                                    onChange={(selectedOption) => {
+                                      handleCategoryChange(
+                                        selectedOption,
+                                        index
+                                      );
+                                    }}
                                   />
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        ))}
+                              {isAmountVisible && (
+                                <div className="w-50">
+                                  <label
+                                    htmlFor={`amount_${index}`}
+                                    className="block text-lg font-medium leading-6 text-gray-900"
+                                  >
+                                    Amount
+                                  </label>
+                                  <div className="mt-2">
+                                    <input
+                                      id={`amount_${index}`}
+                                      className="form-control"
+                                      value={categoryAmounts[index]}
+                                      name={`amount_${index}`}
+                                      readOnly
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
                       </fieldset>
                     )}
 
@@ -1024,7 +1116,6 @@ function handleRevenueChange(idx, event) {
                       isSearchable={true}
                       name="color"
                       options={transformedAllCustomerData}
-                      
                       onChange={handleCustomerChange}
                     />
                   </div>
@@ -1076,7 +1167,7 @@ function handleRevenueChange(idx, event) {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="sm:col-span-3 ">
                         <label
                           htmlFor="city"
@@ -1097,7 +1188,7 @@ function handleRevenueChange(idx, event) {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="sm:col-span-3 ">
                         <label
                           htmlFor="city"
@@ -1122,90 +1213,100 @@ function handleRevenueChange(idx, event) {
 
                       {isRevenueTypeVisible && (
                         <fieldset className="col-span-6 mt-3 ">
-                        <legend title="Multiple Revenue type/code can be selected"  className="text-lg font-medium leading-6 text-gray-900">
-                          Revenue Type/Code <pre className="text-xs text-black">(Multiple Revenue type/code can be selected)</pre>
-                        </legend>
-                        <div className="mt-2 gap-x-5 flex overflow-auto">
-                          {revenueType[idx]?.types?.map((revenue) => {
-                            return (
-                              <div
-                                key={revenue.revenueId}
-                                className="form-check form-check-inline"
-                              >
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  name={`revenueId${idx}`}
-                                  value={revenue.revenueId}
-                                  checked={checkedRevenues.includes(revenue.revenueId)}
-                                  onChange={(event) => {
-                                    handleRevenueChange(idx, event);
-                                    handleCheckedRevenueChange(revenue.revenueId);
-                                  }}
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor={`revenueId${idx}`}
-                                >
-                                  {revenue.revenueName}
-                                </label>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {categories && 
-                            categories.length != 0 && 
-                              categories.map((category, index) => (
-                                
-                          <div
-                            key={index}
-                            className="flex gap-3 mt-4"
+                          <legend
+                            title="Multiple Revenue type/code can be selected"
+                            className="text-lg font-medium leading-6 text-gray-900"
                           >
-                            <div className="w-50">
-                              <label
-                                htmlFor={`category_${index}`}
-                                className="block text-lg font-medium leading-6 text-gray-900"
-                              >
-                                Category
-                              </label>
-                              <div className="mt-2">
-                                <Select
-                                  id={`category_${index}`}
-                                  className="basic-single w-50"
-                                  classNamePrefix="select"
-                                  name={`category_${index}`}
-                                  options={transformedRevenueCategoryOptions(index)}
-                                  onChange={(selectedOption) => {
-                                    handleCategoryChange(selectedOption, index);
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            {isAmountVisible && (
-                              <div className="w-50">
-                                <label
-                                  htmlFor={`amount_${index}`}
-                                  className="block text-lg font-medium leading-6 text-gray-900"
+                            Revenue Type/Code{" "}
+                            <pre className="text-xs text-black">
+                              (Multiple Revenue type/code can be selected)
+                            </pre>
+                          </legend>
+                          <div className="mt-2 gap-x-5 flex overflow-auto">
+                            {revenueType[idx]?.types?.map((revenue) => {
+                              return (
+                                <div
+                                  key={revenue.revenueId}
+                                  className="form-check form-check-inline"
                                 >
-                                  Amount
-                                </label>
-                                <div className="mt-2">
                                   <input
-                                    id={`amount_${index}`}
-                                    className="form-control"
-                                    value={categoryAmounts[index]}
-                                    name={`amount_${index}`}
-                                    readOnly
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={`revenueId${idx}`}
+                                    value={revenue.revenueId}
+                                    checked={checkedRevenues.includes(
+                                      revenue.revenueId
+                                    )}
+                                    onChange={(event) => {
+                                      handleRevenueChange(idx, event);
+                                      handleCheckedRevenueChange(
+                                        revenue.revenueId
+                                      );
+                                    }}
                                   />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor={`revenueId${idx}`}
+                                  >
+                                    {revenue.revenueName}
+                                  </label>
                                 </div>
-                              </div>
-                            )}
+                              );
+                            })}
                           </div>
-                        ))}
-                      </fieldset>
+
+                          {categories &&
+                            categories.length != 0 &&
+                            categories.map((category, index) => (
+                              <div key={index} className="flex gap-3 mt-4">
+                                <div className="w-50">
+                                  <label
+                                    htmlFor={`category_${index}`}
+                                    className="block text-lg font-medium leading-6 text-gray-900"
+                                  >
+                                    Category
+                                  </label>
+                                  <div className="mt-2">
+                                    <Select
+                                      id={`category_${index}`}
+                                      className="basic-single w-50"
+                                      classNamePrefix="select"
+                                      name={`category_${index}`}
+                                      options={transformedRevenueCategoryOptions(
+                                        index
+                                      )}
+                                      onChange={(selectedOption) => {
+                                        handleCategoryChange(
+                                          selectedOption,
+                                          index
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                {isAmountVisible && (
+                                  <div className="w-50">
+                                    <label
+                                      htmlFor={`amount_${index}`}
+                                      className="block text-lg font-medium leading-6 text-gray-900"
+                                    >
+                                      Amount
+                                    </label>
+                                    <div className="mt-2">
+                                      <input
+                                        id={`amount_${index}`}
+                                        className="form-control"
+                                        value={categoryAmounts[index]}
+                                        name={`amount_${index}`}
+                                        readOnly
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                        </fieldset>
                       )}
-                     
                     </div>
 
                     {!idx == 0 && (
