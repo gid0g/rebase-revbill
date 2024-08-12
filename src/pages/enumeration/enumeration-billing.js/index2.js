@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Link } from "react-router-dom";
 import api from "../../../axios/custom";
 import Select from "react-select";
@@ -18,7 +18,6 @@ const EnumerateBilling = () => {
   const organisationId = sessionStorage.getItem("organisationId");
   const [formValues, setFormValues] = useState([]);
   const [categories, setCategories] = useState([]);
-  // const [categoryAmounts, setCategoryAmounts] = useState([]);
   const [categoryAmounts, setCategoryAmounts] = useState({});
   const [categoryIndex, setCategoryIndex] = useState(0);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
@@ -30,7 +29,6 @@ const EnumerateBilling = () => {
     agencyName,
     agencyOption,
     agencyId,
-    customerStatus,
     setExistingCustomerFields,
     data,
     buildingName,
@@ -39,92 +37,91 @@ const EnumerateBilling = () => {
     loadingBusiness,
     submitBusinessProfile,
   } = useContext(Context);
-  const [Enum, setEnum] = useState([]);
+  const [Enum, setEnum] = useState([])
   useEffect(() => {
     setEnum(enumerateFields);
-  }, [1]);
+  },[1])
   useEffect(() => {
     console.log("EnumerateFields:", Enum);
-  }, [enumerateFields]);
+    
+  },[1])
+  console.log("agencyOption:", agencyOption);
+  console.log("agencyName:", agencyName);
 
-  const [amountType, setAmountType] = useState({
-    0: {
-      types: [],
-    },
-  });
 
-  useEffect(() => {
-    const fetchBusinessType = async () => {
-      if (enumerateFields[0]?.businessTypeId) {
-        const updatedFields = [...existingCustomerFields];
-        updatedFields[0].businessTypeId = enumerateFields[0]?.businessTypeId;
-        setExistingCustomerFields((prevState) => [
-          {
-            ...prevState[0],
-            businessTypeId: enumerateFields[0]?.businessTypeId,
+
+
+   const fetchBusinessType = useCallback(async () => {
+     if (Enum[0]?.businessTypeId) {
+       const updatedFields = [...existingCustomerFields];
+       updatedFields[0].businessTypeId = Enum[0]?.businessTypeId;
+       setExistingCustomerFields((prevState) => [
+         {
+           ...prevState[0],
+           businessTypeId: Enum[0]?.businessTypeId,
+         },
+         ...prevState.slice(1),
+       ]);
+       try {
+         await api
+           .get(`enumeration/${organisationId}/business-types`, {
+             headers: {
+               Authorization: `Bearer ${token}`,
+             },
+           })
+           .then((response) => {
+             console.log("Business Size:", response.data);
+             setBusinessType(response.data);
+           })
+           .catch((error) => {
+             console.log(error);
+           });
+       } catch (error) {
+         console.log(error);
+       }
+     }
+   }, [Enum, existingCustomerFields]);
+   
+    useEffect(() => {
+      fetchBusinessType();
+    }, [Enum[0]?.businessTypeId]);
+  
+const fetchBusinessSize = useCallback(async () => {
+  if (Enum) {
+    const updatedFields = [...existingCustomerFields];
+    updatedFields[0].businessSizeId = Enum[0]?.businessSizeId;
+    setExistingCustomerFields((prevState) => [
+      {
+        ...prevState[0],
+        businessSizeId: Enum[0]?.businessSizeId,
+        createdBy: `${userData[0]?.email}`,
+        agencyId: agencyId,
+      },
+      ...prevState.slice(1),
+    ]);
+    try {
+      api
+        .get(`enumeration/${organisationId}/business-sizes`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-          ...prevState.slice(1),
-        ]);
-        try {
-          await api
-            .get(`enumeration/${organisationId}/business-types`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-            .then((response) => {
-              console.log("Business Size:", response.data);
-              setBusinessType(response.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        } catch (error) {
+        })
+        .then((response) => {
+          console.log("businesssss", response.data);
+          setBusinessSize(response.data);
+        })
+        .catch((error) => {
           console.log(error);
-        }
-      }
-    };
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}, [Enum, existingCustomerFields]);
 
-    fetchBusinessType();
-  }, [enumerateFields[0]?.businessTypeId]);
-
-  useEffect(() => {
-    const fetchBusinessSize = async () => {
-      if (enumerateFields) {
-        const updatedFields = [...existingCustomerFields];
-        updatedFields[0].businessSizeId = enumerateFields[0]?.businessSizeId;
-        setExistingCustomerFields((prevState) => [
-          {
-            ...prevState[0],
-            businessSizeId: enumerateFields[0]?.businessSizeId,
-            createdBy: `${userData[0]?.email}`,
-            agencyId: agencyId,
-          },
-          ...prevState.slice(1),
-        ]);
-        try {
-          api
-            .get(`enumeration/${organisationId}/business-sizes`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-            .then((response) => {
-              console.log("businesssss", response.data);
-              setBusinessSize(response.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    };
-
-    fetchBusinessSize();
-  }, [enumerateFields[0]?.businessSizeId]);
-
+useEffect(() => {
+  fetchBusinessSize();
+}, [Enum[0]?.businessSizeId]);
   const removeDuplicates = (arr) => {
     if (arr?.length > 0) {
       return arr?.filter((value, index, self) => {
@@ -135,72 +132,76 @@ const EnumerateBilling = () => {
   };
 
   const [originalRevenues, setOriginalRevenues] = useState([]);
-  useEffect(() => {
-    const processedRevenues = enumerateFields.map((enumerate) =>
+  const processRevenues = useCallback(() => {
+    const processedRevenues = Enum.map((enumerate) =>
       removeDuplicates(enumerate?.billRevenues)
     );
+
     const flattenedRevenues = [].concat(...processedRevenues);
     const uniqueRevenues = removeDuplicates(flattenedRevenues);
     console.log("original", uniqueRevenues);
     setOriginalRevenues(uniqueRevenues);
-  }, [enumerateFields]);
+  }, [Enum]);
+
+  useEffect(() => {
+    processRevenues();
+  }, [processRevenues]);
   useEffect(() => {
     console.log("originalRevenues", originalRevenues);
   }, [originalRevenues]);
+   const fetchCategories = useCallback(async () => {
+     if (originalRevenues?.length > 0) {
+       setIsCategoriesLoading(true);
+
+       try {
+         const fetchRevenues = await fetchRevenueCategories(originalRevenues);
+         setCategories(fetchRevenues);
+         setIsCategoriesLoading(false);
+       } catch (error) {
+         console.error(error);
+         setIsCategoriesLoading(false);
+       }
+     }
+   }, [Enum, originalRevenues]);
   useEffect(() => {
     console.log("done getting");
-    const fetchCategories = async () => {
-      if (originalRevenues?.length > 0) {
-        setIsCategoriesLoading(true);
-
-        try {
-          const fetchRevenues = await fetchRevenueCategories(originalRevenues);
-          setCategories(fetchRevenues);
-          setIsCategoriesLoading(false);
-        } catch (error) {
-          console.error(error);
-          setIsCategoriesLoading(false);
-        }
-      }
-    };
 
     fetchCategories();
-  }, [enumerateFields]);
+  }, [Enum, businessType]);
 
   useEffect(() => {
     console.log("Entire Category:", categories);
   }, [categories]);
 
+   const fetchRevenues = useCallback(async () => {
+     const promises = Enum.map((field) => {
+       if (originalRevenues?.length > 0) {
+         return api
+           .get(
+             `revenue/${organisationId}/business-type/${field.businessTypeId}`,
+             {
+               headers: {
+                 Authorization: `Bearer ${token}`,
+               },
+             }
+           )
+           .then((response) => response.data);
+       } else {
+         return [];
+       }
+     });
+
+     Promise.all(promises)
+       .then((responses) => {
+         setRevenues(responses.flat());
+       })
+       .catch((error) => {
+         console.log(error);
+       });
+   }, [Enum, originalRevenues]);
   useEffect(() => {
-    const fetchRevenues = async () => {
-      const promises = enumerateFields.map((field) => {
-        if (originalRevenues?.length > 0) {
-          return api
-            .get(
-              `revenue/${organisationId}/business-type/${field.businessTypeId}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            )
-            .then((response) => response.data);
-        } else {
-          return [];
-        }
-      });
-
-      Promise.all(promises)
-        .then((responses) => {
-          setRevenues(responses.flat());
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
-
     fetchRevenues();
-  }, [enumerateFields, originalRevenues]);
+  }, [Enum, originalRevenues]);
 
   useEffect(() => {
     console.log("got revenue", revenues);
@@ -224,19 +225,27 @@ const EnumerateBilling = () => {
 
       console.log("Categories", responses);
 
-      const fetchedRevenuesCat = responses.map((response) => response.data);
-      return fetchedRevenuesCat;
+      const fetchedRevenuesCategories = responses.map(
+        (response) => response.data
+      );
+      return fetchedRevenuesCategories;
     } catch (error) {
       throw error;
     }
   };
-  const businessTypeObj = enumerateFields.map((enumerateField) =>
+  const businessTypeObj = Enum.map((enumerateField) =>
     businessType?.find((item) => item?.id === enumerateField?.businessTypeId)
   );
 
-  const businessSizeObj = enumerateFields.map((enumerateField) =>
+  const businessSizeObj = Enum.map((enumerateField) =>
     businessSize?.find((item) => item?.id === enumerateField?.businessSizeId)
   );
+
+  console.log("Business Type Objects:", businessTypeObj);
+  console.log("Business Type :", businessType);
+  console.log("Business Size Objects:", businessSizeObj);
+  console.log("Business Size :", businessSize);
+
 
   const [revenueNames, setRevenueNames] = useState({});
 
@@ -253,7 +262,7 @@ const EnumerateBilling = () => {
     }
     return revenueNames[revenueId];
   };
-
+ 
   const transformedRevenueCategoryOptions = (search, index) => {
     console.log("search this", index, search, originalRevenues, categories);
     const filteredCategories = categories.map((category) => {
@@ -284,6 +293,7 @@ const EnumerateBilling = () => {
     return options;
   };
 
+ 
   const handleCategoryChange = (
     selectedCategory,
     revenueId,
@@ -306,7 +316,7 @@ const EnumerateBilling = () => {
       console.log("Setting billrevenues");
       setExistingCustomerFields((prevState) => [
         {
-          ...prevState[0],
+          ...prevState[0], 
           BillRevenuePrices: [
             ...existingCustomerFields[0].BillRevenuePrices,
             {
@@ -316,7 +326,7 @@ const EnumerateBilling = () => {
             },
           ],
         },
-        ...prevState.slice(1),
+        ...prevState.slice(1), 
       ]);
     }
   };
@@ -324,22 +334,16 @@ const EnumerateBilling = () => {
   useEffect(() => {
     console.log("categoryAmounts", categoryAmounts);
   }, [categoryAmounts]);
+
+
   useEffect(() => {
     console.log("businessTypeObj", businessTypeObj);
     console.log("businessSizeObj", businessSizeObj);
-    console.log("Business Type Objects:", businessTypeObj);
-    console.log("Business Type :", businessType);
-    console.log("Business Size Objects:", businessSizeObj);
-    console.log("Business Size :", businessSize);
   }, [businessTypeObj, businessSizeObj]);
 
   useEffect(() => {
     console.log("datas", data);
   }, [data]);
-
-  const Submit = async () => {
-    
-  };
 
   return (
     <>
@@ -377,10 +381,11 @@ const EnumerateBilling = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 ">
-              {businessType.map((businessTypeItem, idx) => {
+                    {businessType.map((businessTypeItem, idx) => {
+                // Ensure businessTypeItem is defined
                 if (!businessTypeItem) return null;
 
-                const correspondingEnumerateField = enumerateFields.find(
+                const correspondingEnumerateField = Enum.find(
                   (field) => field?.businessTypeId === businessTypeItem.id
                 );
 
@@ -424,6 +429,7 @@ const EnumerateBilling = () => {
                               Category:
                             </p>
                             <div className="mt-2 ">
+          
                               <Select
                                 id="category"
                                 className="basic-single"
@@ -449,6 +455,7 @@ const EnumerateBilling = () => {
                               <p className="block text-lg font-bold leading-6 text-gray-900">
                                 Amount:
                               </p>
+                 
                               <input
                                 className="form-control"
                                 name="amount"
@@ -463,6 +470,8 @@ const EnumerateBilling = () => {
                   }
                 );
               })}
+
+              {/*  */}
             </div>
           </div>
         </div>

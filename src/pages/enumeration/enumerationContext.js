@@ -253,11 +253,7 @@ export const ContextProvider = ({ children }) => {
     createdBy: obj.createdBy,
   }));
 
-useEffect(()=>{
-  console.log("Converted------------->", convertedField)
-},[convertedField])  useEffect(() => {
-    console.log("Converted------------->", convertedField);
-  }, [convertedField]);
+
   const submitPayerId = (e) => {
     e.preventDefault();
     navigate("enumeration/createbusinessprofile");
@@ -390,6 +386,11 @@ useEffect(()=>{
   useEffect(()=>{
     console.log("setting new propertyiDcontext------>",newPropertyId )
   },[newPropertyId])
+  
+  useEffect(()=>{
+    console.log("AgencyName------>",agencyName )
+  },[agencyName])
+
   const submitBusinessProfile = async (e) => {
     e.preventDefault();
     setLoadingBusiness(true);

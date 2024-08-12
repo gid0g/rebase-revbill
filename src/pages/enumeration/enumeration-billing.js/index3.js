@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
 import api from "../../../axios/custom";
 import Select from "react-select";
@@ -18,7 +18,6 @@ const EnumerateBilling = () => {
   const organisationId = sessionStorage.getItem("organisationId");
   const [formValues, setFormValues] = useState([]);
   const [categories, setCategories] = useState([]);
-  // const [categoryAmounts, setCategoryAmounts] = useState([]);
   const [categoryAmounts, setCategoryAmounts] = useState({});
   const [categoryIndex, setCategoryIndex] = useState(0);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
@@ -30,25 +29,15 @@ const EnumerateBilling = () => {
     agencyName,
     agencyOption,
     agencyId,
-    existingCustomerAgencyId,
     setExistingCustomerFields,
     data,
     buildingName,
-    enumerationData,
     existingCustomerFields,
-    enumerateFields,
+    convertedField,
     loadingBusiness,
     submitBusinessProfile,
   } = useContext(Context);
-  const [Enum, setEnum] = useState([]);
-  useEffect(() => {
-    setEnum(enumerateFields);
-  }, []);
-  useEffect(() => {
-    console.log("EnumerateFields:", Enum);
-  }, [Enum]);
-  console.log("agencyOption:", agencyOption);
-  console.log("agencyName:", agencyName);
+
   const [amountType, setAmountType] = useState({
     0: {
       types: [],
@@ -57,13 +46,13 @@ const EnumerateBilling = () => {
 
   useEffect(() => {
     const fetchBusinessType = async () => {
-      if (Enum[0]?.businessTypeId) {
+      if (convertedField[0]?.businessTypeId) {
         const updatedFields = [...existingCustomerFields];
-        updatedFields[0].businessTypeId = Enum[0]?.businessTypeId;
+        updatedFields[0].businessTypeId = convertedField[0]?.businessTypeId;
         setExistingCustomerFields((prevState) => [
           {
             ...prevState[0],
-            businessTypeId: Enum[0]?.businessTypeId,
+            businessTypeId: convertedField[0]?.businessTypeId,
           },
           ...prevState.slice(1),
         ]);
@@ -88,17 +77,17 @@ const EnumerateBilling = () => {
     };
 
     fetchBusinessType();
-  }, [Enum[0]?.businessTypeId]);
+  }, [convertedField[0]?.businessTypeId]);
 
   useEffect(() => {
     const fetchBusinessSize = async () => {
-      if (Enum) {
+      if (convertedField) {
         const updatedFields = [...existingCustomerFields];
-        updatedFields[0].businessSizeId = Enum[0]?.businessSizeId;
+        updatedFields[0].businessSizeId = convertedField[0]?.businessSizeId;
         setExistingCustomerFields((prevState) => [
           {
             ...prevState[0],
-            businessSizeId: Enum[0]?.businessSizeId,
+            businessSizeId: convertedField[0]?.businessSizeId,
             createdBy: `${userData[0]?.email}`,
             agencyId: agencyId,
           },
@@ -125,7 +114,7 @@ const EnumerateBilling = () => {
     };
 
     fetchBusinessSize();
-  }, [Enum[0]?.businessSizeId]);
+  }, [convertedField[0]?.businessSizeId]);
 
   const removeDuplicates = (arr) => {
     if (arr?.length > 0) {
@@ -136,24 +125,17 @@ const EnumerateBilling = () => {
     return arr;
   };
 
-  // const originalRevenues = removeDuplicates(Enum[0]?.billRevenues);
-  ///////////////////////
   const [originalRevenues, setOriginalRevenues] = useState([]);
   useEffect(() => {
-    const processedRevenues = Enum.map((enumerate) =>
+    const processedRevenues = convertedField.map((enumerate) =>
       removeDuplicates(enumerate?.billRevenues)
     );
-
-    // Flatten the array of arrays and remove duplicates again if needed
     const flattenedRevenues = [].concat(...processedRevenues);
     const uniqueRevenues = removeDuplicates(flattenedRevenues);
-    console.log("orignal", uniqueRevenues);
+    console.log("original", uniqueRevenues);
     setOriginalRevenues(uniqueRevenues);
-  }, [Enum]);
-  //////////////////////
-  useEffect(() => {
-    console.log("originalRevenues", originalRevenues);
-  }, [originalRevenues]);
+  }, [convertedField]);
+
   useEffect(() => {
     console.log("done getting");
     const fetchCategories = async () => {
@@ -172,45 +154,11 @@ const EnumerateBilling = () => {
     };
 
     fetchCategories();
-  }, [Enum, businessType]);
+  }, [convertedField]);
 
-  useEffect(() => {
-    console.log("Entire Category:", categories);
-  }, [categories]);
-
-  //To get revenues
-  // useEffect(() => {
-  //   const fetchRevenues = async () => {
-
-  //     if(originalRevenues?.length > 0) {
-  //       try {
-  //         await api
-  //           .get(
-  //             `revenue/${organisationId}/business-type/${Enum[0]?.businessTypeId}`,
-  //             {
-  //               headers: {
-  //                 Authorization: `Bearer ${token}`,
-  //               },
-  //             }
-  //           )
-  //           .then((response) => {
-  //             setRevenues(response.data);
-  //           })
-  //           .catch((error) => {
-  //             console.log(error);
-  //           });
-  //       } catch(error) {
-  //         console.log(error);
-  //       }
-  //     }
-  //   }
-
-  //   fetchRevenues();
-  // }, [Enum[0]?.billRevenues.length]);
-  //////////////////////////////
   useEffect(() => {
     const fetchRevenues = async () => {
-      const promises = Enum.map((field) => {
+      const promises = convertedField.map((field) => {
         if (originalRevenues?.length > 0) {
           return api
             .get(
@@ -237,11 +185,8 @@ const EnumerateBilling = () => {
     };
 
     fetchRevenues();
-  }, [Enum, originalRevenues]);
+  }, [originalRevenues]);
 
-  useEffect(() => {
-    console.log("got revenue", revenues);
-  }, [revenues]);
   const fetchRevenueCategories = async (revenueIds) => {
     const apiEndpoints = revenueIds.map(
       (revenueId) =>
@@ -261,78 +206,51 @@ const EnumerateBilling = () => {
 
       console.log("Categories", responses);
 
-      const fetchedRevenuesCategories = responses.map(
-        (response) => response.data
-      );
-      return fetchedRevenuesCategories;
+      const fetchedRevenuesCat = responses.map((response) => response.data);
+      return fetchedRevenuesCat;
     } catch (error) {
       throw error;
     }
   };
-  const businessTypeObj = Enum.map((enumerateField) =>
+  const businessTypeObj = convertedField.map((enumerateField) =>
     businessType?.find((item) => item?.id === enumerateField?.businessTypeId)
   );
 
-  const businessSizeObj = Enum.map((enumerateField) =>
+  const businessSizeObj = convertedField.map((enumerateField) =>
     businessSize?.find((item) => item?.id === enumerateField?.businessSizeId)
   );
 
-  console.log("Business Type Objects:", businessTypeObj);
-  console.log("Business Type :", businessType);
-  console.log("Business Size Objects:", businessSizeObj);
-  console.log("Business Size :", businessSize);
-
-  // const businessTypeObj = businessType?.find(
-  //   (item) => item?.id === Enum[0]?.businessTypeId
-  // );
-
-  // const businessSizeObj = businessSize?.find(
-  //   (item) => item?.id === Enum[0]?.businessSizeId);
-  // const [check,setcheck]=useState(false)
-  //   const revenueName = (revenueId) => {
-  //     setcheck(!check)
-  //     const revenue = revenues.find(revenue => revenue?.revenueId === revenueId);
-  //     return revenue?.revenueName;
-  //   }
   const [revenueNames, setRevenueNames] = useState({});
 
-  const revenueName = (revenueId) => {
-    console.log("revenueeeeeeeeeee", revenueId);
-    if (!revenueNames[revenueId]) {
-      const revenue = revenues.find(
-        (revenue) => revenue?.revenueId === revenueId
-      );
-      setRevenueNames((prevRevenueNames) => ({
-        ...prevRevenueNames,
-        [revenueId]: revenue?.revenueName,
-      }));
-    }
-    return revenueNames[revenueId];
-  };
-  // const transformedRevenueCategoryOptions = (index) => {
+  // const revenueName = (revenueId) => {
+  //   console.log("revenueeeeeeeeeee", revenueId);
+  //   if (!revenueNames[revenueId]) {
+  //     const revenue = revenues.find(
+  //       (revenue) => revenue?.revenueId === revenueId
+  //     );
+  //     setRevenueNames((prevRevenueNames) => ({
+  //       ...prevRevenueNames,
+  //       [revenueId]: revenue?.revenueName,
+  //     }));
+  //   }
+  //   return revenueNames[revenueId];
+  // };
 
-  //   const filteredCategories = categories.map(category => {
-  //     const filteredData = category.filter(item => originalRevenues?.includes(item.revenueId))
-  //     return {
-  //       data: filteredData,
-  //       };
-  //       });
-  //       console.log("filteredCategories", filteredCategories)
-  //       // Get the filtered categories for the selected revenueId
-  //       const filteredCategoriesForIndex = filteredCategories[index];
-  //       console.log("filteredCategoriesForIndex", filteredCategoriesForIndex)
-
-  //       // Category options
-  //   const options = filteredCategoriesForIndex?.data?.map((item) => ({
-  //     value: item.categoryId,
-  //     label: item.categoryName,
-  //     amount: item.amount,
-  //     revenue: item.revenueId,
-  //   }));
-
-  //   return options;
-  //   };
-
+  const revenueName = useMemo(
+    (revenueId) => {
+      if (!revenueNames[revenueId]) {
+        const revenue = revenues.find(
+          (revenue) => revenue?.revenueId === revenueId
+        );
+        setRevenueNames((prevRevenueNames) => ({
+          ...prevRevenueNames,
+          [revenueId]: revenue?.revenueName,
+        }));
+      }
+      return revenueNames[revenueId];
+    },
+    [revenueNames, revenues]
+  );
   const transformedRevenueCategoryOptions = (search, index) => {
     console.log("search this", index, search, originalRevenues, categories);
     const filteredCategories = categories.map((category) => {
@@ -363,41 +281,6 @@ const EnumerateBilling = () => {
     return options;
   };
 
-  // useEffect(()=>{
-  //   console.log("transformedRevenueCategoryOptions", transformedRevenueCategoryOptions)
-  // },[check])
-
-  // const handleCategoryChange = (selectedCategory, index) => {
-  //   const updatedFields = [...existingCustomerFields];
-
-  //   if(selectedCategory) {
-
-  //     const billRevenuePrice = {
-  //       revenueId: selectedCategory?.revenue,
-  //       billAmount: selectedCategory?.amount,
-  //       category: selectedCategory?.label
-  //     }
-
-  //     updatedFields[0].BillRevenuePrices = [
-  //       ...updatedFields[0].BillRevenuePrices,
-  //       billRevenuePrice,
-  //     ];
-
-  //     updatedFields[0].agencyId =  agencyOption ? agencyOption?.agencyId : existingCustomerAgencyId;
-  //     updatedFields[0].createdBy = userData[0]?.email;
-  //     console.log("Updated Fields", updatedFields);
-  //     console.log("agencyOption", agencyOption);
-  //     console.log("agencyId", agencyId);
-  //     console.log("existingCustomerAgencyId", existingCustomerAgencyId);
-
-  //     const newCategoryAmounts = [...categoryAmounts];
-  //     newCategoryAmounts[index] = selectedCategory?.amount;
-  //     setCategoryAmounts(newCategoryAmounts);
-
-  //     setIsVisible(true);
-
-  //   }
-  // };
   const handleCategoryChange = (
     selectedCategory,
     revenueId,
@@ -428,54 +311,12 @@ const EnumerateBilling = () => {
               billAmount: selectedCategory?.amount,
               category: selectedCategory?.label,
             },
-          ], // add a new price to the array
+          ],
         },
         ...prevState.slice(1),
       ]);
     }
   };
-
-  useEffect(() => {
-    console.log("categoryAmounts", categoryAmounts);
-  }, [categoryAmounts]);
-  // const handleCategoryChange = (selectedCategory, index) => {
-  //   if (index >= 0 && index < existingCustomerFields.length) {
-  //     const updatedFields = [...existingCustomerFields];
-
-  //     if (selectedCategory) {
-  //       const billRevenuePrice = {
-  //         revenueId: selectedCategory?.revenue,
-  //         billAmount: selectedCategory?.amount,
-  //         category: selectedCategory?.label,
-  //       };
-
-  //       if (!updatedFields[index].BillRevenuePrices) {
-  //         updatedFields[index].BillRevenuePrices = [];
-  //       }
-
-  //       updatedFields[index].BillRevenuePrices.push(billRevenuePrice);
-
-  //       updatedFields[index].agencyId = agencyOption? agencyOption?.agencyId : existingCustomerAgencyId;
-  //       updatedFields[index].createdBy = userData[0]?.email;
-
-  //       const newCategoryAmounts = [...categoryAmounts];
-  //       newCategoryAmounts[index] = selectedCategory?.amount;
-  //       setCategoryAmounts(newCategoryAmounts);
-
-  //       setIsVisible(true);
-  //     }
-  //   }
-  // };
-
-  useEffect(() => {
-    console.log("businessTypeObj", businessTypeObj);
-    console.log("businessSizeObj", businessSizeObj);
-  }, [businessTypeObj, businessSizeObj]);
-
-  useEffect(() => {
-    console.log("datas", data);
-  }, [data]);
-
   return (
     <>
       <div className=" ">
@@ -512,99 +353,17 @@ const EnumerateBilling = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 ">
-              {/*  */}
-              {/*        
-                {businessType?.map((businessTypeItem, idx) => {
-            const correspondingEnumerateField = Enum.find(
-              (field) => field?.businessTypeId === businessTypeItem.id
-            );
-
-                  if (correspondingEnumerateField) {
-                    return correspondingEnumerateField.billRevenues.map((revenue, revenueIdx) => {
-                      return (
-                        <div key={revenueIdx} className="shadow p-4 mt-3 mb-4 d-flex w-full flex-column">
-                          <div className="sm:col-span-2 ">
-                            <p
-                              htmlFor="city"
-                              className="block text-lg font-bold leading-6 text-gray-900"
-                            >
-                              Business Type : <span>{businessTypeItem.businessTypeName}</span>
-                            </p>
-                          </div>
-                          <div className="sm:col-span-2 ">
-                            <p
-                              htmlFor="city"
-                              className="block text-lg font-bold leading-6 text-gray-900"
-                            >
-                              Business Size: {businessSizeObj.length!==0 && <span>{ businessSizeObj.find((item) => item.id === correspondingEnumerateField.businessSizeId)?.businessSizeName}</span>}
-                            </p>
-                          </div>
-                          <div className="sm:col-span-2 ">
-                            <p
-                              htmlFor="city"
-                              className="block text-lg font-bold leading-6 text-gray-900"
-                            >
-                              Revenue Type/Code: <span>{revenueName(revenue)}</span>
-                            </p>
-                          </div>
-                          <div className="row mb-3">
-                            {" "}
-                            <div className="col-6">
-                              <p
-                                htmlFor="category"
-                                className="block text-lg font-bold leading-6 text-gray-900"
-                              >
-                                Category:
-                              </p>
-                              <div className="mt-2 ">
-                                <Select
-                                  id="category"
-                                  className="basic-single"
-                                  classNamePrefix="select"
-                                  name="category"
-                                  options={transformedRevenueCategoryOptions(idx)}
-                                  onChange={(event) => handleCategoryChange(event, idx)}
-                                />
-                              </div>
-                            </div>
-                          <div className="col-6">
-                            <div>
-                            <p
-                                htmlFor="amount"
-                                className="block text-lg font-bold leading-6 text-gray-900"
-                                >
-                                Amount:
-                              </p>
-                              <input
-                                className="form-control"
-                                name="amount"
-                                value={categoryAmounts[idx]}
-                                readOnly
-                                />
-                            </div>
-                          </div>
-                                </div>
-                        </div>
-                      );
-                    });
-                  } else {
-                    return null;
-                  }
-                })} */}
               {businessType.map((businessTypeItem, idx) => {
-                // Ensure businessTypeItem is defined
                 if (!businessTypeItem) return null;
 
-                const correspondingEnumerateField = Enum.find(
+                const correspondingEnumerateField = convertedField.find(
                   (field) => field?.businessTypeId === businessTypeItem.id
                 );
 
-                // Ensure correspondingEnumerateField is defined
                 if (!correspondingEnumerateField) return null;
 
                 return correspondingEnumerateField.billRevenues.map(
                   (revenue, revenueIdx) => {
-                    // Ensure businessSizeObj is defined
                     const businessSizeObj = businessSize?.find(
                       (item) =>
                         item?.id === correspondingEnumerateField.businessSizeId
@@ -641,14 +400,6 @@ const EnumerateBilling = () => {
                               Category:
                             </p>
                             <div className="mt-2 ">
-                              {/* <Select
-                id="category"
-                className="basic-single"
-                classNamePrefix="select"
-                name="category"
-                options={transformedRevenueCategoryOptions(revenueIdx)}
-                onChange={(event) => handleCategoryChange(event, revenueIdx)}
-              /> */}
                               <Select
                                 id="category"
                                 className="basic-single"
@@ -674,12 +425,6 @@ const EnumerateBilling = () => {
                               <p className="block text-lg font-bold leading-6 text-gray-900">
                                 Amount:
                               </p>
-                              {/* <input
-                className="form-control"
-                name="amount"
-                value={categoryAmounts[revenueIdx]}
-                readOnly
-              /> */}
                               <input
                                 className="form-control"
                                 name="amount"
@@ -694,8 +439,6 @@ const EnumerateBilling = () => {
                   }
                 );
               })}
-
-              {/*  */}
             </div>
           </div>
         </div>
