@@ -54,7 +54,7 @@ const Categories = () => {
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+      selector: (row, index) => filteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
       style: {

@@ -80,7 +80,7 @@ const FormStep1 = (props) => {
   return (
     <div>
       <div className="header mt-3 d-flex justify-content-center text-center">
-        <h4>Are you a New or Existing Customer?</h4>
+        <h4>Are you a New or Existing Rate-Payer?</h4>
       </div>
       <div className="d-flex mt-4 mb-3 justify-content-center">
         <button
@@ -104,12 +104,12 @@ const FormStep1 = (props) => {
       {customerStatus && (
         <div className="px-2 py-2">
           <div>
-            <label>Please Select Customer</label>
+            <label>Please Select Rate-Payer</label>
             <Select
               id="customer"
               className="basic-single"
               classNamePrefix="select"
-              defaultValue="Select Customer"
+              defaultValue="Select Rate-Payer"
               isSearchable={true}
               name="customerId"
               options={transformedCustomerData}
@@ -320,7 +320,7 @@ const FormStep2 = (props) => {
           aria-hidden="true"
         ></i>
 
-        <h4 className="">Is the customer available to provide PID?</h4>
+        <h4 className="">Is the Rate-Payer available to provide PID?</h4>
         <div></div>
       </div>
 

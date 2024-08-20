@@ -348,7 +348,7 @@ const EnumerateBilling = () => {
                   htmlFor="last-name"
                   className="block text-lg font-medium leading-6 text-gray-900"
                 >
-                  Customer Details: {data?.fullName}
+                  Rate-Payer Details: {data?.fullName}
                 </p>
               </div>
             </div>

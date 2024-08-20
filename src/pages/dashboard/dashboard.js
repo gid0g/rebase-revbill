@@ -113,7 +113,7 @@ const Dashboard = () => {
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+           selector: (row, index) => data.indexOf(row) + 1,
       sortable: true,
       grow: 0,
     },
@@ -148,7 +148,7 @@ const Dashboard = () => {
   const agencyColumns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+           selector: (row, index) => data.indexOf(row) + 1,
       sortable: true,
       grow: 0,
     },
@@ -183,7 +183,7 @@ const Dashboard = () => {
   const bankColumns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+           selector: (row, index) => data.indexOf(row) + 1,
       sortable: true,
       grow: 0,
     },
@@ -398,7 +398,7 @@ const Dashboard = () => {
                 <div className="row">
                   <div className="col-xl-12 col-lg-8">
                     <div className="mb-3">
-                      <p>Total Registered Property Customer </p>
+                      <p>Total Registered Property Rate-Payer </p>
                     </div>
                     <hr className="text-dark" />
                     <div className="d-flex mb-1">
@@ -457,7 +457,7 @@ const Dashboard = () => {
                 <div className="row">
                   <div className="col-xl-12 col-lg-8">
                     <div className="mb-3">
-                      <p>Total Combined Customer</p>
+                      <p>Total Combined Rate-Payer</p>
                     </div>
                     <hr className="text-dark" />
 
@@ -582,34 +582,52 @@ const Dashboard = () => {
       </div>
 
       <div className="mt-3 p-4 shadow-md">
-      <div className="items-center gap-3 flex flex-row-reverse">
-        <div className="">
-          <button
-            style={{ backgroundColor: activeButton === 'Bank' ? '#009BEF' : '',color: activeButton === 'Bank' ? 'white' : 'black' }}
-            className={`btn btn-white  ${activeButton === 'Bank' ? 'active' : ''}`}
-            onClick={() => handleButtonClick('Bank')}>
-            Bank
-          </button>
+        <div className="items-center gap-3 flex flex-row-reverse">
+          <div className="">
+            <button
+              style={{
+                backgroundColor: activeButton === "Bank" ? "#009BEF" : "",
+                color: activeButton === "Bank" ? "white" : "black",
+              }}
+              className={`btn btn-white  ${
+                activeButton === "Bank" ? "active" : ""
+              }`}
+              onClick={() => handleButtonClick("Bank")}
+            >
+              Bank
+            </button>
+          </div>
+          <div className="">
+            <button
+              style={{
+                backgroundColor: activeButton === "Revenue" ? "#009BEF" : "",
+                color: activeButton === "Revenue" ? "white" : "black",
+              }}
+              className={`btn btn-white  ${
+                activeButton === "Revenue" ? "active" : ""
+              }`}
+              onClick={() => handleButtonClick("Revenue")}
+            >
+              Revenue
+            </button>
+          </div>
+          <div className="">
+            <button
+              style={{
+                backgroundColor: activeButton === "Agency" ? "#009BEF" : "",
+                color: activeButton === "Agency" ? "white" : "black",
+              }}
+              className={`btn btn-white  ${
+                activeButton === "Agency" ? "active" : ""
+              }`}
+              onClick={() => handleButtonClick("Agency")}
+            >
+              Agency
+            </button>
+          </div>
         </div>
-        <div className="">
-          <button
-            style={{ backgroundColor: activeButton === 'Revenue' ? '#009BEF' : '', color: activeButton === 'Revenue' ? 'white' : 'black'}}
-            className={`btn btn-white  ${activeButton === 'Revenue' ? 'active' : ''}`}
-            onClick={() => handleButtonClick('Revenue')}>
-            Revenue
-          </button>
-        </div>
-        <div className="">
-          <button
-            style={{ backgroundColor: activeButton === 'Agency' ? '#009BEF' : '', color: activeButton === 'Agency' ? 'white' : 'black' }}
-            className={`btn btn-white  ${activeButton === 'Agency' ? 'active' : ''}`}
-            onClick={() => handleButtonClick('Agency')}>
-            Agency
-          </button>
-        </div>
-      </div>        
-        {activeButton === 'Bank' && (
-            <DataTable
+        {activeButton === "Bank" && (
+          <DataTable
             title="Total Collection by Bank"
             columns={bankColumns}
             data={data}

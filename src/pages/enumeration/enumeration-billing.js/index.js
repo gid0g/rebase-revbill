@@ -276,7 +276,7 @@ const EnumerateBilling = () => {
     return revenue?.revenueName || "";
   };
 
-  const transformedRevenueCategoryOptions = (index) => {
+  const transformedRevenueCategoryOptions = (index,bill) => {
     const filteredCategories = categories.map((category) => {
       const filteredData = category.filter((item) =>
         crudeRevenue.some((revenueArray) =>
@@ -287,12 +287,17 @@ const EnumerateBilling = () => {
         data: filteredData,
       };
     });
-
+    console.log("filteredData--------------","categories", categories,"filteredCategories", filteredCategories,"crudeRevenue",crudeRevenue)
+   console.log("Indexxxxxxxxxx--------------",index, bill);
     // Get the filtered categories for the selected revenueId
-    const filteredCategoriesForIndex = filteredCategories[index];
-
+    console.log("DATA------------", filteredCategories);
+    // const filteredCategoriesForIndex = filteredCategories[index + idx];
+    const filteredCategoriesForIndex = filteredCategories
+    .flatMap(group => group.data) // Flatten the array of arrays
+    .filter(item => item.revenueId === bill); 
+    console.log("filteredCategoriesForIndex",filteredCategoriesForIndex)
     // Category options
-    const options = filteredCategoriesForIndex?.data?.map((item) => ({
+    const options = filteredCategoriesForIndex?.map((item) => ({
       value: item.categoryId,
       label: item.categoryName,
       amount: item.amount,
@@ -383,7 +388,7 @@ const EnumerateBilling = () => {
                   htmlFor="last-name"
                   className="block text-lg font-medium leading-6 text-gray-900"
                 >
-                  Customer Details: {data?.fullName}
+                  Rate-Payer Details: {data?.fullName}
                 </p>
               </div>
             </div>
@@ -500,7 +505,10 @@ const EnumerateBilling = () => {
                           htmlFor="city"
                           className="block text-lg font-bold leading-6 text-gray-900"
                         >
-                          Revenue Type/Code: <span>{revenues.length>0 && revenueName(bill,idx)}</span>
+                          Revenue Type/Code:{" "}
+                          <span>
+                            {revenues.length > 0 && revenueName(bill, idx)}
+                          </span>
                         </p>
                       </div>
                       <div className="col-span-3 ">
@@ -508,7 +516,11 @@ const EnumerateBilling = () => {
                           htmlFor="city"
                           className="block text-lg font-bold leading-6 text-gray-900"
                         >
-                          Agency Area: <span>{existingCustomerAgencyId!==null && ExactAgency(existingCustomerAgencyId)}</span>
+                          Agency Area:{" "}
+                          <span>
+                            {existingCustomerAgencyId !== null &&
+                              ExactAgency(existingCustomerAgencyId)}
+                          </span>
                         </p>
                       </div>
                       <div className="row mb-3">
@@ -526,7 +538,10 @@ const EnumerateBilling = () => {
                               className="basic-single"
                               classNamePrefix="select"
                               name="category"
-                              options={transformedRevenueCategoryOptions(idx)}
+                              options={transformedRevenueCategoryOptions(
+                                idx,
+                                bill
+                              )}
                               onChange={(event) =>
                                 handleCategoryChange(event, idx, bill)
                               }

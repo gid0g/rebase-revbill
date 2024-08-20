@@ -33,11 +33,15 @@ const PropertyProfile = () => {
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(20);
   const customRowsPerPageOptions = [5, 10, 20];
-
+  const filteredItems = propertyData.filter(
+    (item) =>
+      item.buildingName &&
+      item.buildingName.toLowerCase().includes(filterText.toLowerCase())
+  );
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+      selector: (row, index) => filteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
     },
@@ -247,7 +251,7 @@ const PropertyProfile = () => {
       )
       .then((response) => {
         setLoading(false);
-        console.log("PropertyData------------->", response.data)
+        console.log("PropertyData------------->", response.data);
         setPropertyData(response.data);
         var paginationData = response.headers["x-pagination"];
         const parsedPaginationData = JSON.parse(paginationData);
@@ -370,7 +374,7 @@ const PropertyProfile = () => {
   };
 
   const handleEdit = (item) => {
-    console.log("Editing---->", item)
+    console.log("Editing---->", item);
     setEditRow({ ...item });
   };
 
@@ -379,12 +383,6 @@ const PropertyProfile = () => {
     console.log(item);
     console.log(`View button clicked for item with ID ${item.propertyId}`);
   };
-
-  const filteredItems = propertyData.filter(
-    (item) =>
-      item.buildingName &&
-      item.buildingName.toLowerCase().includes(filterText.toLowerCase())
-  );
 
   useEffect(() => {
     fetchPropertyData(1);

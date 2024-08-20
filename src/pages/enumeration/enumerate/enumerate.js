@@ -20,7 +20,7 @@ const Enumerate = () => {
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+      selector: (row, index) => data.indexOf(row) + 1,
       sortable: true,
       grow: 0,
     },
@@ -36,7 +36,7 @@ const Enumerate = () => {
       sortable: true,
     },
     {
-      name: "Customer Count",
+      name: "Rate-Payer Count",
       selector: (row) => row.customerCount,
       sortable: true,
     },
@@ -288,7 +288,7 @@ const Enumerate = () => {
                 <div className="row">
                   <div className="col-xl-12 col-lg-8">
                     <div className="mb-3 ">
-                      <p>No of registered customer this month</p>
+                      <p>No of registered Rate-Payer this month</p>
                     </div>
                     <hr className="text-dark" />
 
@@ -316,7 +316,7 @@ const Enumerate = () => {
                 <div className="row">
                   <div className="col-xl-12 col-lg-8">
                     <div className="mb-3 ">
-                      <p>No of registered customer this week</p>
+                      <p>No of registered Rate-Payer this week</p>
                     </div>
                     <hr className="text-dark" />
 
@@ -344,7 +344,7 @@ const Enumerate = () => {
                 <div className="row">
                   <div className="col-xl-12 col-lg-8">
                     <div className="mb-3 ">
-                      <p>No of registered customer today</p>
+                      <p>No of registered Rate-Payer today</p>
                     </div>
                     <hr className="text-dark" />
 
@@ -371,7 +371,7 @@ const Enumerate = () => {
 
       <div className="mt-3 p-4 shadow-md">
         <DataTable
-          title="Property and Customer Count Table"
+          title="Property and Rate-Payer Count Table"
           columns={columns}
           data={data}
           pagination

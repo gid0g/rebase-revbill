@@ -40,7 +40,7 @@ const TransactionReportBuilder = () => {
                     <hr className="text-dark" />
                     <div className="flex justify-content-between mb-1">
                       <div className="w-2/5 pt-2">
-                        <h6 className="text-primary">Customer</h6>
+                        <h6 className="text-primary">Rate-Payer</h6>
                         <b className="text-lg">4530</b>
                       </div>
                     </div>
@@ -69,7 +69,7 @@ const TransactionReportBuilder = () => {
 
                     <div className="flex justify-content-between mb-1">
                       <div className="w-2/5  pt-2">
-                        <h6 className="text-primary">Customer</h6>
+                        <h6 className="text-primary">Rate-Payer</h6>
                         <b className="text-lg">4530</b>
                       </div>
                     </div>
@@ -98,7 +98,7 @@ const TransactionReportBuilder = () => {
 
                     <div className="flex justify-content-between mb-1">
                       <div className="w-2/5  pt-2">
-                        <h6 className="text-primary">Customer</h6>
+                        <h6 className="text-primary">Rate-Payer</h6>
                         <b className="text-lg">3</b>
                       </div>
                     </div>

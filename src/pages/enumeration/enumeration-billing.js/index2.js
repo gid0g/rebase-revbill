@@ -376,12 +376,12 @@ useEffect(() => {
                   htmlFor="last-name"
                   className="block text-lg font-medium leading-6 text-gray-900"
                 >
-                  Customer Details: {data?.fullName}
+                  Rate-Payer Details: {data?.fullName}
                 </p>
               </div>
             </div>
             <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 ">
-                    {businessType.map((businessTypeItem, idx) => {
+              {businessType.map((businessTypeItem, idx) => {
                 // Ensure businessTypeItem is defined
                 if (!businessTypeItem) return null;
 
@@ -429,7 +429,6 @@ useEffect(() => {
                               Category:
                             </p>
                             <div className="mt-2 ">
-          
                               <Select
                                 id="category"
                                 className="basic-single"
@@ -455,7 +454,7 @@ useEffect(() => {
                               <p className="block text-lg font-bold leading-6 text-gray-900">
                                 Amount:
                               </p>
-                 
+
                               <input
                                 className="form-control"
                                 name="amount"

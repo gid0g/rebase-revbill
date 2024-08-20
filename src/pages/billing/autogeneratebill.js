@@ -33,7 +33,7 @@ const AutoGenerateBill = () => {
       sortable: true,
     },
     {
-      name: "Customer ",
+      name: "Rate-Payer ",
       selector: (row) => row.customers.fullName,
       sortable: true,
     },

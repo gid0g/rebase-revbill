@@ -16,7 +16,7 @@ const bulkBillList = ({data}) => {
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => (currentPage - 1) * perPage + index + 1,
+      selector: (row, index) => reversedFilteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
       style: {

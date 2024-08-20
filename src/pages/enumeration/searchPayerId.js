@@ -14,12 +14,10 @@ const SearchPayId = () => {
   const [validityChecked, setValidityChecked] = useState(false);
   const [formShow, setFormShow] = useState(false);
   const [data, setData] = useState([]);
-  console.log(data);
-
+  const [searchby, setSearchby] = useState("");
   const state = useSelector((state) => state);
   // let user = state.authReducer.user;
   const token = sessionStorage.getItem("myToken");
-  console.log("tokennnn", token);
 
   const handleNameChange = (event) => {
     setInput(event.target.value);
@@ -27,6 +25,17 @@ const SearchPayId = () => {
 
   const handleRadioChange = (event) => {
     setValue(event.target.value);
+    switch (event.target.value) {
+      case "Name":
+        setSearchby("Name")
+        break;
+      case "Email":
+        setSearchby("Email")     
+        break;
+      case "Phone":
+        setSearchby("Phone Number")
+        break;
+    }
     setFormShow(true);
     setLoading(false);
   };
@@ -38,10 +47,20 @@ const SearchPayId = () => {
         searchByName();
         break;
       case "Email":
-        searchByEmail();
+        const RegexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (input.match(RegexEmail)) {
+          searchByEmail();
+        } else {
+          alert("Invalid Email");
+        }
         break;
       case "Phone":
-        searchByPhone();
+        const RegexPhone = /^(?:\+234|0)(7[0-9]|8[01]|9[01])\d{8}$/;
+        if (input.match(RegexPhone)) {
+          searchByPhone();
+        } else {
+          alert("Invalid Phone number");
+        }
         break;
     }
   };
@@ -353,6 +372,7 @@ const SearchPayId = () => {
             name="searchpayerId"
             id="2"
             value="Email"
+            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
             onChange={handleRadioChange}
           />
           <label className="form-check-label" htmlFor="inlineRadio2">
@@ -379,19 +399,45 @@ const SearchPayId = () => {
             <div className="shadow-sm rounded w-50 my-2 px-4 py-2 d-flex flex-column justify-content-center">
               <form onSubmit={searchHandler}>
                 <div className="">
-                  <h4 className="mb-2 form-label">Search PayerId</h4>
+                  <h4 className="mb-2 form-label">Search PayerId by {searchby !== "" && searchby} </h4>
                   <div className="row gx-3">
                     <div className=" mb-2 mb-md-0">
-                      <input
-                        autoFocus
-                        type="text"
-                        className="form-control form-control-lg p-2 d-flex align-items-center fs-16px"
-                        placeholder=""
-                        value={input}
-                        name="input"
-                        onChange={handleNameChange}
-                        //   required
-                      />
+                      {value === "Name" && (
+                        <input
+                          autoFocus
+                          type="text"
+                          className="form-control form-control-lg p-2 d-flex align-items-center fs-16px"
+                          placeholder="Enter Name"
+                          value={input}
+                          name="input"
+                          onChange={handleNameChange}
+                          //   required
+                        />
+                      )}
+                      {value === "Email" && (
+                        <input
+                          autoFocus
+                          type="email"
+                          className="form-control form-control-lg p-2 d-flex align-items-center fs-16px"
+                          placeholder="Enter a valid Email"
+                          value={input}
+                          name="input"
+                          onChange={handleNameChange}
+                          //   required
+                        />
+                      )}
+                      {value === "Phone" && (
+                        <input
+                          autoFocus
+                          type="text"
+                          className="form-control form-control-lg p-2 d-flex align-items-center fs-16px"
+                          placeholder="Enter a valid phone number"
+                          value={input}
+                          name="input"
+                          onChange={handleNameChange}
+                          //   required
+                        />
+                      )}
                     </div>
                   </div>
 

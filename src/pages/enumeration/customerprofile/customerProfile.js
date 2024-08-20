@@ -29,7 +29,7 @@ const CustomerProfile = () => {
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+      selector: (row, index) => filteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
     },
@@ -124,13 +124,13 @@ const CustomerProfile = () => {
     <>
       <div className="mb-3 flex justify-content-between">
         <div className=" ">
-          <h3 className=" mb-0">Customer Profile</h3>
+          <h3 className=" mb-0">Rate-Payer Profile</h3>
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
               <Link to="/home/Dashboard">Home</Link>
             </li>
             <li className="breadcrumb-item">Enumeration</li>
-            <li className="breadcrumb-item active">Customer Profile </li>
+            <li className="breadcrumb-item active">Rate-Payer Profile </li>
           </ol>
         </div>
 

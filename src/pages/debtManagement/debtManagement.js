@@ -142,7 +142,7 @@ useEffect(()=>{
       },
     },
     {
-      name: "Customer Name",
+      name: "Rate-Payer Name",
       selector: (row) => row.customersFullName,
       sortable: true,
       grow: 2,
@@ -163,7 +163,7 @@ useEffect(()=>{
       name: "Paid Amount",
       selector: (row) => row.totalAmountPaid,
       sortable: true,
-      grow: 1,      
+      grow: 1,
       style: {
         textAlign: "center",
       },
@@ -173,7 +173,7 @@ useEffect(()=>{
       name: "Outstanding Amount",
       selector: (row) => row.totalBillArrears,
       sortable: true,
-      grow: 1,      
+      grow: 1,
       style: {
         textAlign: "center",
       },
@@ -196,14 +196,14 @@ useEffect(()=>{
 
       cell: (row) => (
         <div>
-          <button 
-           data-bs-toggle="modal"
-           data-bs-target="#viewMore" 
-           className="btn btn-sm shadow-md bg-primary text-white"
-           type="button"
-           onClick={() => handleViewMore(row)}
-           >
-             View More
+          <button
+            data-bs-toggle="modal"
+            data-bs-target="#viewMore"
+            className="btn btn-sm shadow-md bg-primary text-white"
+            type="button"
+            onClick={() => handleViewMore(row)}
+          >
+            View More
           </button>
         </div>
       ),
@@ -710,7 +710,7 @@ useEffect(()=>{
 
   return (
     <>
-    <ToastContainer />
+      <ToastContainer />
 
       <div className="mb-2 pl-3 flex justify-content-between">
         <div className=" ">
@@ -945,36 +945,44 @@ useEffect(()=>{
           </div>
 
           <div className="row ">
-              <div className="col-4">
-                <label className="my-2">Start Date</label>
-                <input
-                  type="datetime-local"
-                  className="form-control"
-                  placeholder="Enter Start Date"
-                  name="start_date"
-                  value={startDate}
-                  onChange={handleStartChange}
-                />
-              </div>
+            <div className="col-4">
+              <label className="my-2">Start Date</label>
+              <input
+                type="datetime-local"
+                className="form-control"
+                placeholder="Enter Start Date"
+                name="start_date"
+                value={startDate}
+                onChange={handleStartChange}
+              />
+            </div>
 
-              <div className="col-4">
+            <div className="col-4">
               <label className="my-2">End Date</label>
               <input
-                  type="datetime-local"
-                  className="form-control"
-                  placeholder="Enter End Date"
-                  name="end_date"
-                  value={endDate}
-                  onChange={handleEndChange}
-                />
-              </div>
+                type="datetime-local"
+                className="form-control"
+                placeholder="Enter End Date"
+                name="end_date"
+                value={endDate}
+                onChange={handleEndChange}
+              />
             </div>
+          </div>
         </div>
 
         <div className="flex justify-end mt-3 p-3">
           {" "}
-          <button className="btn btn-primary mr-3" onClick={handleFilterDebtManagement}> {loading ? <Spinner /> :"Search"}</button>
-          <button className="btn btn-danger" onClick={Reset}>Reset</button>
+          <button
+            className="btn btn-primary mr-3"
+            onClick={handleFilterDebtManagement}
+          >
+            {" "}
+            {loading ? <Spinner /> : "Search"}
+          </button>
+          <button className="btn btn-danger" onClick={Reset}>
+            Reset
+          </button>
         </div>
       </div>
       <button
@@ -987,173 +995,257 @@ useEffect(()=>{
       </button>
 
       <div className="table-responsive">
-{  reversedFilteredItems1.length!==0?
-      <DataTable
-          columns={columns}
-          data={reversedFilteredItems1}
-          pagination
-          paginationRowsPerPageOptions={customRowsPerPageOptions}
-          progressPending={pending}
-          paginationResetDefaultPage={resetPaginationToggle}
-          subHeader
-          subHeaderComponent={subHeaderComponentMemo}
-          paginationServer
-          paginationTotalRows={totalRows}
-          onChangePage={handlePageChange}
-          onChangeRowsPerPage={handlePerRowsChange}
-        />
-        :
-      <DataTable
-          columns={columns}
-          data={reversedFilteredItems}
-          pagination
-          paginationRowsPerPageOptions={customRowsPerPageOptions}
-          progressPending={pending}
-          paginationResetDefaultPage={resetPaginationToggle}
-          subHeader
-          subHeaderComponent={subHeaderComponentMemo}
-          paginationServer
-          paginationTotalRows={totalRows}
-          onChangePage={handlePageChange}
-          onChangeRowsPerPage={handlePerRowsChange}
-        />
-        }
+        {reversedFilteredItems1.length !== 0 ? (
+          <DataTable
+            columns={columns}
+            data={reversedFilteredItems1}
+            pagination
+            paginationRowsPerPageOptions={customRowsPerPageOptions}
+            progressPending={pending}
+            paginationResetDefaultPage={resetPaginationToggle}
+            subHeader
+            subHeaderComponent={subHeaderComponentMemo}
+            paginationServer
+            paginationTotalRows={totalRows}
+            onChangePage={handlePageChange}
+            onChangeRowsPerPage={handlePerRowsChange}
+          />
+        ) : (
+          <DataTable
+            columns={columns}
+            data={reversedFilteredItems}
+            pagination
+            paginationRowsPerPageOptions={customRowsPerPageOptions}
+            progressPending={pending}
+            paginationResetDefaultPage={resetPaginationToggle}
+            subHeader
+            subHeaderComponent={subHeaderComponentMemo}
+            paginationServer
+            paginationTotalRows={totalRows}
+            onChangePage={handlePageChange}
+            onChangeRowsPerPage={handlePerRowsChange}
+          />
+        )}
       </div>
 
-      <div className="modal fade"  id="viewMore">
-          <div className="modal-dialog"  >
-            <div className="modal-content">
-              <div className="modal-header">
-                <h4 className="modal-title">Bill Information</h4>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-hidden="true"
-                ></button>
-              </div>
-              <div className="modal-body">
-                {billDataInfo && (
-                  <>
-                    <div className="w-full flex flex-col gap-2 border-b-[1px] border-gray-300 pb-2">
-                      <div className="flex justify-between items-center w-full">
-                        <h4 className="text-black text-sm font-medium">HarmonizedBillReferenceNo:</h4>
-                        <span className="text-gray-600 text-sm font-medium">{billDataInfo[0]?.harmonizedBillReferenceNo}</span>
-                      </div>
-
-                      <div className="flex justify-between items-center gap-4">
-                          <span className="text-gray-600 text-sm font-medium inline-flex">No. of Bills</span>
-                          <span className="bg-sky-50 inline-flex text-blue-950 py-.5 px-2 rounded-md text-center font-bold">{billDataInfo.length}</span>
-                      </div>
-
+      <div className="modal fade" id="viewMore">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Bill Information</h4>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-hidden="true"
+              ></button>
+            </div>
+            <div className="modal-body">
+              {billDataInfo && (
+                <>
+                  <div className="w-full flex flex-col gap-2 border-b-[1px] border-gray-300 pb-2">
+                    <div className="flex justify-between items-center w-full">
+                      <h4 className="text-black text-sm font-medium">
+                        HarmonizedBillReferenceNo:
+                      </h4>
+                      <span className="text-gray-600 text-sm font-medium">
+                        {billDataInfo[0]?.harmonizedBillReferenceNo}
+                      </span>
                     </div>
 
-
-                  <div className="flex justify-start items-start flex-col my-2">
-                      <h4 className="text-gray-800 font-semibold text-sm">List of Bills</h4>
+                    <div className="flex justify-between items-center gap-4">
+                      <span className="text-gray-600 text-sm font-medium inline-flex">
+                        No. of Bills
+                      </span>
+                      <span className="bg-sky-50 inline-flex text-blue-950 py-.5 px-2 rounded-md text-center font-bold">
+                        {billDataInfo.length}
+                      </span>
+                    </div>
                   </div>
 
-                  </>
+                  <div className="flex justify-start items-start flex-col my-2">
+                    <h4 className="text-gray-800 font-semibold text-sm">
+                      List of Bills
+                    </h4>
+                  </div>
+                </>
+              )}
 
-                )}
-
-                <div className="w-full flex justify-start items-start flex-col gap-2">
-                  {billDataInfo && billDataInfo.map((bill, i) => (
-                    <div key={i} className="w-full flex justify-start items-start flex-col">
-
-
+              <div className="w-full flex justify-start items-start flex-col gap-2">
+                {billDataInfo &&
+                  billDataInfo.map((bill, i) => (
+                    <div
+                      key={i}
+                      className="w-full flex justify-start items-start flex-col"
+                    >
                       <div className="w-full flex flex-col justify-start items-start gap-4">
-                      
-                        <Accordion defaultActiveKey={i == 0 ? i : 0} className="!bg-[transparent] !w-full">
-                            <Accordion.Item eventKey={i} className="!bg-[transparent]">
-                              <Accordion.Header className="!text-blue-950 !bg-[transparent]">
-                                <div className="!w-full !flex !justify-start !items-center gap-4">
-                                    <span className="text-black text-sm inline-flex">{i+1}. BillReferenceNo:</span>
-                                    <span className="text-gray-900 text-center inline-flex">{bill?.billReferenceNo}</span>
+                        <Accordion
+                          defaultActiveKey={i == 0 ? i : 0}
+                          className="!bg-[transparent] !w-full"
+                        >
+                          <Accordion.Item
+                            eventKey={i}
+                            className="!bg-[transparent]"
+                          >
+                            <Accordion.Header className="!text-blue-950 !bg-[transparent]">
+                              <div className="!w-full !flex !justify-start !items-center gap-4">
+                                <span className="text-black text-sm inline-flex">
+                                  {i + 1}. BillReferenceNo:
+                                </span>
+                                <span className="text-gray-900 text-center inline-flex">
+                                  {bill?.billReferenceNo}
+                                </span>
+                              </div>
+                            </Accordion.Header>
+                            <Accordion.Body className="!visible !h-52 overflow-y-auto">
+                              <div className="w-full flex flex-col justify-start items-center gap-2">
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Bill Type:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.billType.billTypeName
+                                      ? bill.billType.billTypeName
+                                      : "None"}
+                                  </span>
                                 </div>
-                                  </Accordion.Header>
-                              <Accordion.Body className="!visible !h-52 overflow-y-auto">
-                                <div className="w-full flex flex-col justify-start items-center gap-2">
 
                                 <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Bill Type:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.billType.billTypeName ? bill.billType.billTypeName : "None"}</span>
-                                  </div>
-
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Property Name:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.property.buildingName ? bill.property.buildingName : "None"}</span>
-                                  </div>
-
-                                  
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Customer Name:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.customers.fullName}</span>
-                                  </div>
-
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Agency Name:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.agencies.agencyName ? bill.agencies.agencyName : "Null"}</span>
-                                  </div>
-
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Frequency Name:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.frequencies.frequencyName ? bill.frequencies.frequencyName : "Null"}</span>
-                                  </div>
-
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Business Type:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.businessType.businessTypeName ? bill.businessType.businessTypeName : "Null"}</span>
-                                  </div>
-  
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Revenue(s):</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.revenues.revenueName}</span>
-                                  </div>
-
-                                                                  
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Category:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.category}</span>
-                                  </div>
-
-                                                                                                  
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Amount Paid:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.amountPaid}</span>
-                                  </div>
-
-
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Arrears:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.billArrears}</span>
-                                  </div>
-
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Applied Date:</h4>
-                                    <span className="text-gray-600 font-medium inline-flex"> {bill.appliedDate}</span>
-                                  </div>
-
-                                  
-                                  <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
-                                    <h4 className="text-sm inline-flex">Bill Status:</h4>
-                                    <span className={`${checkStatus(bill.billStatus.billStatusName)}  font-semibold inline-flex py-2 px-3 rounded-md`}> {bill.billStatus.billStatusName ? bill.billStatus.billStatusName : "Null"}</span>
-                                  </div>
-
+                                  <h4 className="text-sm inline-flex">
+                                    Property Name:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.property.buildingName
+                                      ? bill.property.buildingName
+                                      : "None"}
+                                  </span>
                                 </div>
-                              </Accordion.Body>
-                            </Accordion.Item>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Rate-Payer Name:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.customers.fullName}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Agency Name:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.agencies.agencyName
+                                      ? bill.agencies.agencyName
+                                      : "Null"}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Frequency Name:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.frequencies.frequencyName
+                                      ? bill.frequencies.frequencyName
+                                      : "Null"}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Business Type:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.businessType.businessTypeName
+                                      ? bill.businessType.businessTypeName
+                                      : "Null"}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Revenue(s):
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.revenues.revenueName}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Category:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.category}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Amount Paid:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.amountPaid}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Arrears:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.billArrears}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Applied Date:
+                                  </h4>
+                                  <span className="text-gray-600 font-medium inline-flex">
+                                    {" "}
+                                    {bill.appliedDate}
+                                  </span>
+                                </div>
+
+                                <div className="w-full flex justify-between items-center border-b-[1px] border-gray-300 py-2">
+                                  <h4 className="text-sm inline-flex">
+                                    Bill Status:
+                                  </h4>
+                                  <span
+                                    className={`${checkStatus(
+                                      bill.billStatus.billStatusName
+                                    )}  font-semibold inline-flex py-2 px-3 rounded-md`}
+                                  >
+                                    {" "}
+                                    {bill.billStatus.billStatusName
+                                      ? bill.billStatus.billStatusName
+                                      : "Null"}
+                                  </span>
+                                </div>
+                              </div>
+                            </Accordion.Body>
+                          </Accordion.Item>
                         </Accordion>
-
                       </div>
-
                     </div>
                   ))}
-                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </>
   );
 };

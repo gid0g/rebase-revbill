@@ -367,7 +367,7 @@ const ValidatePayId = () => {
                       className="btn bg-blue-900 text-white my-2"
                     >
                       {" "}
-                      {loading ? <Spinner /> : "Submit"}
+                      {loading ? <Spinner /> : "Validate Payer ID"}
                     </button>
                   </div>
                 </div>
@@ -574,7 +574,7 @@ const ValidatePayId = () => {
                         <div className="row  align-items-center">
                           <div className="col">
                             <h4 className="text-center text-lg">
-                              Do You Want to Create this Customer?
+                              Do You Want to Create this Rate-Payer?
                             </h4>
                           </div>
                         </div>
@@ -607,7 +607,7 @@ const ValidatePayId = () => {
                   className="btn bg-blue-900 text-white"
                   type="button"
                 >
-                  Create Customer
+                  Create Rate-Payer
                 </button>
               </div>
             </div>

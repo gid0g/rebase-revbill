@@ -16,7 +16,7 @@ const BulkBillList = ({data}) => {
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) =>index + 1,
+      selector: (row, index) => reversedFilteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
       style: {
@@ -34,7 +34,7 @@ const BulkBillList = ({data}) => {
     },
     {
       name: "Status",
-      selector: (row) => row.status  == 0 ? "Failed" : "Success",
+      selector: (row) => (row.status == 0 ? "Failed" : "Success"),
       sortable: true,
       grow: 2,
       style: {
@@ -66,7 +66,7 @@ const BulkBillList = ({data}) => {
             type="button"
             onClick={() => handleView(row)}
           >
-            View <i className="fas fa-eye fa-fw"></i> 
+            View <i className="fas fa-eye fa-fw"></i>
           </button>
         </div>
       ),

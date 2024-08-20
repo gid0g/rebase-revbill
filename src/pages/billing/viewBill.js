@@ -180,7 +180,7 @@ const ViewBill = () => {
                     Notice is hereby given to:
                     <br />
                     <b>
-                      Customer: {data[0]?.firstName} {data[0]?.middleName}{" "}
+                      Rate-Payer: {data[0]?.firstName} {data[0]?.middleName}{" "}
                       {data[0]?.lastName} ,{data[0]?.payerID}
                     </b>
                     <br />

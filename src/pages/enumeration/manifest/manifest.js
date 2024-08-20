@@ -25,7 +25,7 @@ const Manifest = () => {
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+      selector: (row, index) => filteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
     },
@@ -36,7 +36,7 @@ const Manifest = () => {
       grow: 2,
     },
     {
-      name: "Customer Name",
+      name: "Rate-Payer Name",
       selector: (row) => row.lastName + "" + row.firstName,
       sortable: true,
       grow: 2,
@@ -59,7 +59,7 @@ const Manifest = () => {
             className="text-decoration-none text-blue-900"
             onClick={() => handleView(row)}
           >
-            <i className="fa-solid fa-circle-info"></i> View 
+            <i className="fa-solid fa-circle-info"></i> View
           </button>
           <br />
           <br />
@@ -86,7 +86,7 @@ const Manifest = () => {
         onFilter={(e) => setFilterText(e.target.value)}
         onClear={handleClear}
         filterText={filterText}
-        placeholder="Search By Property or Customer"
+        placeholder="Search By Property or Rate-Payer"
       />
     );
   }, [filterText, resetPaginationToggle]);

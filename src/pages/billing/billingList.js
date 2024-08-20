@@ -29,7 +29,7 @@ const [currentPage, setCurrentPage] = useState(1);
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => (currentPage - 1) * perPage + index + 1,
+      selector: (row, index) => reversedFilteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
       style: {
@@ -46,7 +46,7 @@ const [currentPage, setCurrentPage] = useState(1);
       },
     },
     {
-      name: "Customer Name",
+      name: "Rate-Payer Name",
       selector: (row) => row.customers.fullName,
       sortable: true,
       grow: 2,

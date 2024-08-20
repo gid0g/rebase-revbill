@@ -89,7 +89,7 @@ const Revenues = () => {
   const columns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+      selector: (row, index) => filteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
       style: {
@@ -142,7 +142,8 @@ const Revenues = () => {
   const businessTypesColumns = [
     {
       name: "S/N",
-      selector: (row, index) => index + 1,
+      selector: (row, index) =>
+        organisationRevenuesfilteredItems.indexOf(row) + 1,
       sortable: true,
       grow: 0,
       style: {
@@ -173,7 +174,6 @@ const Revenues = () => {
         padding: "2rem",
       },
     },
-
   ].filter(Boolean);
 
   const getBusinessType = (value) => {

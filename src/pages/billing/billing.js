@@ -868,13 +868,13 @@ const Billings = () => {
                     htmlFor="last-name"
                     className="block text-lg font-medium leading-6 text-gray-900"
                   >
-                    Customer Details
+                    Rate-Payer Details
                   </label>
                   <div className="mt-2">
                     <Select
                       className="basic-single"
                       classNamePrefix="select"
-                      defaultValue="Select Customer"
+                      defaultValue="Select Rate-Payer"
                       isSearchable={true}
                       name="color"
                       options={transformedCustomerData}
@@ -1106,13 +1106,13 @@ const Billings = () => {
                     htmlFor="last-name"
                     className="block text-lg font-medium leading-6 text-gray-900"
                   >
-                    Customer Details
+                    Rate-Payer Details
                   </label>
                   <div className="mt-2">
                     <Select
                       className="basic-single"
                       classNamePrefix="select"
-                      defaultValue="Select Customer"
+                      defaultValue="Select Rate-Payer"
                       isSearchable={true}
                       name="color"
                       options={transformedAllCustomerData}

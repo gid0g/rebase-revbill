@@ -36,9 +36,9 @@ const CustomerDto = () => {
             </li>
             <li className="breadcrumb-item">Enumeration</li>
 
-            <li className="breadcrumb-item active">Customer Profile</li>
+            <li className="breadcrumb-item active">Rate-Payer Profile</li>
           </ol>
-          <h1 className="page-header mb-3">Customer Profile</h1>
+          <h1 className="page-header mb-3">Rate-Payer Profile</h1>
           <hr />
 
           <div className=" mt-3 d-flex flex-column">

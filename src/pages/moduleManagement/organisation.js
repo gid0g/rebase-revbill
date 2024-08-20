@@ -72,38 +72,38 @@ const Organisations = () => {
     );
 
     const columns = [
-        {
-            name: "S/N",
-            selector: (row, index) => index + 1,
-            sortable: true,
-            grow: 0,
-            style: {
-                textAlign: "center",
-            },
+      {
+        name: "S/N",
+        selector: (row, index) => filteredItems.indexOf(row) + 1,
+        sortable: true,
+        grow: 0,
+        style: {
+          textAlign: "center",
         },
-        {
-            name: "Organisation Name",
-            selector: (row) => row.organisationName,
-            sortable: true,
-            grow: 2,
-            style: {
-                textAlign: "center",
-            },
+      },
+      {
+        name: "Organisation Name",
+        selector: (row) => row.organisationName,
+        sortable: true,
+        grow: 2,
+        style: {
+          textAlign: "center",
         },
-        {
-            name: "Action",
-            sortable: false,
-            center: true,
-            grow: 0,
-            cell: (row) => (
-                <button
-                    className="btn shadow-md bg-blue-900 text-white"
-                    onClick={() => handleOrganisation(row)}
-                >
-                    View Modules
-                </button>
-            ),
-        },
+      },
+      {
+        name: "Action",
+        sortable: false,
+        center: true,
+        grow: 0,
+        cell: (row) => (
+          <button
+            className="btn shadow-md bg-blue-900 text-white"
+            onClick={() => handleOrganisation(row)}
+          >
+            View Modules
+          </button>
+        ),
+      },
     ];
 
     const filteredItems = filteredData.filter(

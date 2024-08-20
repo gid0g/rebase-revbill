@@ -442,7 +442,7 @@ const CreatePayId = () => {
           State: stateOption
       }
 
-
+console.log("FormData:", formDataTosend)
       const response = await api.post('enumeration/create-pid-bvn', formDataTosend, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -673,16 +673,19 @@ const CreatePayId = () => {
           if (response.data.statusMessage === "PayerID Record Found") {
             setData(response.data.data);
             setLoading(false);
-            toast.success("PayerID is verified and Customer is being created", {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-            });
+            toast.success(
+              "PayerID is verified and Rate-Payer is being created",
+              {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              }
+            );
             createCustomer()
           } else {
             setLoading(false);
@@ -797,7 +800,7 @@ const CreatePayId = () => {
           address: "",
         });
         setTimeout(() => {
-          navigate("/home/enumeration/customerprofile");
+          // navigate("/home/enumeration/customerprofile");
           // window.location.reload();
         }, 5000);
       }
