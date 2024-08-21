@@ -184,10 +184,10 @@ import React, {
           <li className="breadcrumb-item">Billing</li>
           <li className="breadcrumb-item active">Bill Preview</li>
         </ol>
-  
+
         <h1 className="page-header mb-3">Bill Preview Details</h1>
         <hr />
-  
+
         {loading && (
           <ClipLoader
             color={color}
@@ -205,76 +205,105 @@ import React, {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {consolidatedBills.length > 0 ?
-                consolidatedBills.map((item, i) => (
-                <div key={i} className="rounded-md shadow-md shadow-[rgba(0,0,0,0.2)] bg-white py-3 px-2">
-                    
+            {consolidatedBills.length > 0 ? (
+              consolidatedBills.map((item, i) => (
+                <div
+                  key={i}
+                  className="rounded-md shadow-md shadow-[rgba(0,0,0,0.2)] bg-white py-3 px-2"
+                >
                   <div className="flex flex-col gap-4">
                     <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
-                      <h5 className="text-sm text-gray-500 font-medium">HarmonizedBill ReferenceNo</h5>
-                      <h5 className="text-sm text-black font-semibold">{item?.harmonizedBillReferenceNo}</h5>
-                    </div>
-
-
-                    <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
-                      <h5 className="text-sm text-gray-500 font-medium">Property</h5>
-                      <h5 className="text-sm text-black font-semibold">{item?.customers?.corporateName}</h5>
-                    </div>
-
-                    <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
-                      <h5 className="text-sm text-gray-500 font-medium">Customer's Name</h5>
-                      <h5 className="text-sm text-black font-semibold">{item?.customers?.fullName}</h5>
-                    </div>
-
-
-                    <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
-                      <h5 className="text-sm text-gray-500 font-medium">Agency Area</h5>
-                      <h5 className="text-sm text-black font-semibold">{item?.agencies.agencyName}</h5>
+                      <h5 className="text-sm text-gray-500 font-medium">
+                        HarmonizedBill ReferenceNo
+                      </h5>
+                      <h5 className="text-sm text-black font-semibold">
+                        {item?.harmonizedBillReferenceNo}
+                      </h5>
                     </div>
 
                     <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
-                      <h5 className="text-sm text-gray-500 font-medium">Revenue(s)</h5>
-                      <h5 className="text-sm text-black font-semibold">{item?.revenues}</h5>
-                    </div>
-
-
-                    <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
-                      <h5 className="text-sm text-gray-500 font-medium">Category(s)</h5>
-                      <h5 className="text-sm text-black font-semibold">{item?.categories}</h5>
+                      <h5 className="text-sm text-gray-500 font-medium">
+                        Property
+                      </h5>
+                      <h5 className="text-sm text-black font-semibold">
+                        {item?.property?.buildingName}
+                      </h5>
                     </div>
 
                     <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
-                      <h5 className="text-sm text-gray-500 font-medium">Amount</h5>
-                      <h5 className="text-sm text-black font-semibold">{item?.billAmount}</h5>
+                      <h5 className="text-sm text-gray-500 font-medium">
+                        Customer's Name
+                      </h5>
+                      <h5 className="text-sm text-black font-semibold">
+                        {item?.customers?.fullName}
+                      </h5>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
+                      <h5 className="text-sm text-gray-500 font-medium">
+                        Agency Area
+                      </h5>
+                      <h5 className="text-sm text-black font-semibold">
+                        {item?.agencies.agencyName}
+                      </h5>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
+                      <h5 className="text-sm text-gray-500 font-medium">
+                        Revenue(s)
+                      </h5>
+                      <h5 className="text-sm text-black font-semibold">
+                        {item?.revenues}
+                      </h5>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
+                      <h5 className="text-sm text-gray-500 font-medium">
+                        Category(s)
+                      </h5>
+                      <h5 className="text-sm text-black font-semibold">
+                        {item?.categories}
+                      </h5>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-8 border-b-[1px] border-gray-500 p-2">
+                      <h5 className="text-sm text-gray-500 font-medium">
+                        Amount
+                      </h5>
+                      <h5 className="text-sm text-black font-semibold">
+                        {item?.billAmount}
+                      </h5>
                     </div>
                   </div>
 
                   <div className="flex justify-between items-center gap-8 mt-8">
                     <div className="flex-1">
-                      <button className="w-full flex justify-center items-center gap-4 btn bg-black text-white rounded-md" onClick={(e) => handlePreview(e, item)}>
-                        <i class="fa-solid fa-book mr-3"></i> 
+                      <button
+                        className="w-full flex justify-center items-center gap-4 btn bg-black text-white rounded-md"
+                        onClick={(e) => handlePreview(e, item)}
+                      >
+                        <i class="fa-solid fa-book mr-3"></i>
                         <span className="text-white">View Bill</span>
                       </button>
                     </div>
                     <div className="flex-1">
                       <button className="w-full flex justify-center items-center gap-4 btn bg-primary text-white rounded-md">
-                        <i className="fa-solid fa-external-link-square-alt mr-3"></i> 
+                        <i className="fa-solid fa-external-link-square-alt mr-3"></i>
                         <span className="text-white">Upgrade Bill</span>
                       </button>
                     </div>
                   </div>
                 </div>
-                  
-              )) : 
+              ))
+            ) : (
               <div className="flex flex-col justify-center items-center py-6">
-                <h4 className="text-center text-black font-bold">No Bill Found!</h4>
+                <h4 className="text-center text-black font-bold">
+                  No Bill Found!
+                </h4>
               </div>
-              
-            }
+            )}
           </div>
-
         </section>
-  
       </>
     );
   };
