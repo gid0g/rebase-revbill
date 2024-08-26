@@ -182,6 +182,8 @@ const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (selectedBillToBeUpdated) {
+      console.log("Selected bill to be Updated:", selectedBillToBeUpdated);
+
       navigate("updatebill", {
         state: { selectedItem: selectedBillToBeUpdated },
       });

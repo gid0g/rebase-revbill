@@ -17,9 +17,8 @@ const Updatebill = () => {
     const [sections, setSections] = useState([]);
     const selectedItem = location.state?.selectedItem;
 
-    console.log("selectedItem--", selectedItem.harmonizedBillReferenceNo);
+    console.log("selectedItem-----------", selectedItem.harmonizedBillReferenceNo);
     const harmonisedBill = selectedItem.harmonizedBillReferenceNo
-    
     const addSection = () => {
       const newSection = {
         id: sections.length + 1, 
@@ -93,6 +92,7 @@ const Updatebill = () => {
                 Authorization: `Bearer ${token}`,
               },
             });
+            console.log("Response----------", response)
             setCustomerid(response.data[0].customers.customerId);
             console.log("customerid--",customerid)
           } catch (error) {

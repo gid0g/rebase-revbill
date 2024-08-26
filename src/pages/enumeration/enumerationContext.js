@@ -596,7 +596,15 @@ export const ContextProvider = ({ children }) => {
                 progress: undefined,
                 theme: "colored",
               });
-
+              setExistingCustomerFields({
+                agencyId: 0,
+                appliedDate: `${new Date().getFullYear()}`,
+                BillRevenuePrices: [],
+                businessTypeId: 0,
+                businessSizeId: 0,
+                dateCreated: new Date().toISOString(),
+                createdBy: `${userData[0]?.email}`,
+              });
               setTimeout(() => {
                 navigate("/home/billing/previewbill/", {
                   state: {
