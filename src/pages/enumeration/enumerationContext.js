@@ -596,7 +596,7 @@ export const ContextProvider = ({ children }) => {
                 progress: undefined,
                 theme: "colored",
               });
-              setExistingCustomerFields({
+              setExistingCustomerFields([{
                 agencyId: 0,
                 appliedDate: `${new Date().getFullYear()}`,
                 BillRevenuePrices: [],
@@ -604,7 +604,7 @@ export const ContextProvider = ({ children }) => {
                 businessSizeId: 0,
                 dateCreated: new Date().toISOString(),
                 createdBy: `${userData[0]?.email}`,
-              });
+              }]);
               setTimeout(() => {
                 navigate("/home/billing/previewbill/", {
                   state: {
@@ -613,7 +613,7 @@ export const ContextProvider = ({ children }) => {
                     billId: String(billId),
                   },
                 });
-                window.location.reload();
+                // window.location.reload();
               }, 2000);
             } else {
               toast.error(response.data.statusMessage, {
