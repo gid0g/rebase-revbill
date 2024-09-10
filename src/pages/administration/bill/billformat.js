@@ -82,8 +82,10 @@ const BillFormats = () => {
     setEditRow(item);
     setItemId(item?.billFormatId);
   };
-  
 
+  useEffect(() => {
+    console.log("Id-------", itemId);
+  }, [itemId]);
   const columns = [
     {
       name: "S/N",
@@ -309,10 +311,10 @@ const disabled= data.length!==0
             theme: "colored",
           });
           setTimeout(() => {
-            authCloseModal("editBillFormat");
+            authCloseModal("addBillFormat");
             fetchBillFormats();
             window.location.reload() 
-          }, 5000)
+          }, 2000)
         }
         setLoading(false);
         return true;
@@ -366,12 +368,11 @@ useEffect(()=>{
             progress: undefined,
             theme: "colored",
           });
-          setTimeout(()=>{
-
+          setTimeout(() => {
             authCloseModal("editBillFormat");
             fetchBillFormats();
-            // window.location.reload() 
-          },3000)
+            window.location.reload() 
+          }, 2000)
                }
         setLoading(false);
         return true;

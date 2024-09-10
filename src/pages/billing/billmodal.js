@@ -32,11 +32,27 @@ const BillingList = () => {
   const [deactivatedetails, setDeactivatedetails] = useState({});
   const [agent, setAgent] = useState(null);
   const [modalInstance, setModalInstance] = useState(null);
-  const [harminozedset, seHarmonizedset] = useState({});
-  const [TobeView, setTobeView] = useState([]);
-  const [group, setGroup] = useState([]);
-  const [harmonizedbills, setHarmonizedbills] = useState({});
- 
+  const authCloseModal = (elementId) => {
+    const myModal = new Modal(document.getElementById(elementId));
+
+    myModal.show();
+
+    myModal._element.addEventListener("shown.bs.modal", () => {
+      clearTimeout(myModal._element.hideInterval);
+      const id = setTimeout(() => {
+        myModal.hide();
+      });
+      myModal._element.hideInterval = id;
+
+      const backdropElement = document.querySelector(".modal-backdrop.show");
+      if (backdropElement) {
+        backdropElement.remove();
+      }
+    });
+
+    setModalInstance(myModal);
+  };
+
   const adminplaceholder = [
     {
       id: 63,
@@ -55,15 +71,14 @@ const BillingList = () => {
       AdminName: "Aliko Dangote",
     },
   ];
-
   const transformedAgents = adminplaceholder
     ? adminplaceholder.map((item) => ({
         label: item.AdminName,
         value: item.id,
       }))
     : "";
-
   const requestApproval = (e) => {
+    authCloseModal("staticBackdropLabel");
 
     const confirmation = window.confirm(
       "Do you want to continue to generate bill?"
@@ -71,7 +86,6 @@ const BillingList = () => {
     if (confirmation) {
     }
   };
-
   const columns = [
     {
       name: "S/N",
@@ -145,140 +159,6 @@ const BillingList = () => {
         textAlign: "center",
       },
     },
-    {
-      name: "Action",
-      sortable: false,
-      center: true,
-      grow: 0,
-
-      cell: (row) => (
-        <>
-          {row.harmonizedBillReferenceNo !== null ? (
-            <button
-              className="btn shadow-md bg-blue text-white m-1"
-              onClick={() => {
-                seHarmonizedset(row);
-                Viewmore(row);
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#staticBackdrop2"
-            >
-              View More
-            </button>
-          ) : (
-            <div>
-              <DropdownButton
-                id="dropdown-basic-button"
-                title="Action"
-                className="shadow-md bg-blue text-white"
-              >
-                <Dropdown.Item
-                  onClick={() => handleViewBill(row)}
-                  className="text-dark"
-                >
-                  <i className="fa-solid fa-circle-info"></i> View Bill
-                </Dropdown.Item>
-                <Dropdown.Item
-                  onClick={() => handleUpdateBill(row)}
-                  className="text-dark"
-                >
-                  <i className="fa-solid fa-arrows-rotate"></i> Upgrade Bill
-                </Dropdown.Item>
-                <Dropdown.Item
-                  onClick={() => handlePayNow(row)}
-                  className="text-dark"
-                >
-                  <i className="fa-regular fa-credit-card"></i> Pay Now
-                </Dropdown.Item>
-                <Dropdown.Item
-                  onClick={() => setDeactivatedetails(row)}
-                  data-bs-toggle="modal"
-                  className="text-dark"
-                  data-bs-target="#staticBackdrop"
-                >
-                  <i className="fa-solid fa-ban"></i> Deactivate Bill
-                </Dropdown.Item>
-              </DropdownButton>
-            </div>
-          )}
-        </>
-      ),
-    },
-  ];
-
-  const columns2 = [
-    {
-      name: "S/N",
-      selector: (row, index) => reversedFilteredViews.indexOf(row) + 1,
-      sortable: true,
-      grow: 0,
-      style: {
-        textAlign: "center",
-      },
-    },
-    {
-      name: "Property",
-      selector: (row) => row.property?.buildingName,
-      sortable: true,
-      grow: 2,
-      style: {
-        textAlign: "center",
-      },
-    },
-    {
-      name: "Rate-Payer Name",
-      selector: (row) => row.customers.fullName,
-      sortable: true,
-      grow: 2,
-      style: {
-        textAlign: "center",
-      },
-    },
-    {
-      name: "Agency",
-      selector: (row) => row.agencies.agencyName,
-      sortable: true,
-      grow: 2,
-      style: {
-        textAlign: "center",
-      },
-    },
-    {
-      name: "Revenue",
-      selector: (row) => row.revenues.revenueName,
-      sortable: true,
-      grow: 2,
-      style: {
-        textAlign: "center",
-      },
-    },
-    {
-      name: "Category",
-      selector: (row) => row.category,
-      sortable: true,
-      grow: 1,
-      style: {
-        textAlign: "center",
-      },
-    },
-    {
-      name: "Amount",
-      selector: (row) => row.billAmount,
-      sortable: true,
-      grow: 1,
-      style: {
-        textAlign: "center",
-      },
-    },
-    {
-      name: "Harmonized Bill Reference",
-      selector: (row) => row.harmonizedBillReferenceNo,
-      sortable: true,
-      grow: 1,
-      style: {
-        textAlign: "center",
-      },
-    },
 
     {
       name: "Action",
@@ -287,66 +167,56 @@ const BillingList = () => {
       grow: 0,
 
       cell: (row) => (
+        // <div>
+        //   <button className=" text-dark" onClick={() => handleViewBill(row)}>
+        //     <i className="fa-solid fa-circle-info"></i> View Bill
+        //   </button>
+        //   <br></br>
+        //   <button className=" text-dark " onClick={() => handleUpdateBill(row)}>
+        //     <i className="fa-solid fa-arrows-rotate"></i> Upgrade Bill
+        //   </button>
+        //   <br></br>
+        //   <button className=" text-dark " onClick={() => handlePayNow(row)}>
+        //     <i className="fa-regular fa-credit-card"></i> Pay Now
+        //   </button>
+        // </div>
         <div>
-          <button
-            className="text-dark fw-bold"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-            onClick={() => handleViewBill(row)}
+          <DropdownButton
+            id="dropdown-basic-button"
+            title="Action"
+            className="shadow-md bg-blue text-white"
           >
-            <i className="fa-solid fa-circle-info" /> View Bill
-          </button>
-          <hr />
-          <button
-            className="text-dark fw-bold"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-            onClick={() => handleUpdateBill(row)}
-          >
-            <i className="fa-solid fa-arrows-rotate" /> Upgrade Bill
-          </button>
-          <hr />
-          <button
-            className="text-dark fw-bold"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-            onClick={() => handlePayNow(row)}
-          >
-            <i className="fa-regular fa-credit-card" /> Pay Now
-          </button>
-          <hr />
-
-          <button
-            onClick={() => setDeactivatedetails(row)}
-            data-bs-toggle="modal"
-            className="text-dark fw-bold"
-            data-bs-target="#staticBackdrop"
-          >
-            <i className="fa-solid fa-ban" /> Deactivate Bill
-          </button>
+            <Dropdown.Item
+              onClick={() => handleViewBill(row)}
+              className="text-dark"
+            >
+              <i className="fa-solid fa-circle-info"></i> View Bill
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => handleUpdateBill(row)}
+              className="text-dark"
+            >
+              <i className="fa-solid fa-arrows-rotate"></i> Upgrade Bill
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => handlePayNow(row)}
+              className="text-dark"
+            >
+              <i className="fa-regular fa-credit-card"></i> Pay Now
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => setDeactivatedetails(row)}
+              data-bs-toggle="modal"
+              className="text-dark"
+              data-bs-target="#staticBackdrop"
+            >
+              <i className="fa-solid fa-ban"></i> Deactivate Bill
+            </Dropdown.Item>
+          </DropdownButton>
         </div>
       ),
     },
   ];
-
-  useEffect(() => {
-    const currentset = harmonizedbills[
-      `${harminozedset.harmonizedBillReferenceNo}`
-    ] || [harminozedset];
-    setTobeView(currentset);
-    console.log("harminoziedset----------", harminozedset, currentset);
-  }, [harminozedset]);
-  const Viewmore = () => {};
-  const filteredViews =
-    TobeView?.filter(
-      (item) =>
-        item.property?.buildingName &&
-        item.property?.buildingName
-          .toLowerCase()
-          .includes(filterText.toLowerCase())
-    ) ?? [];
-  const reversedFilteredViews = [...filteredViews].reverse();
-
   const filteredItems = data.filter(
     (item) =>
       item.property?.buildingName &&
@@ -418,42 +288,6 @@ const BillingList = () => {
 
   //api to get table data
 
-  const groupedBill = (billset) => {
-    const groupedBills = billset.reduce((acc, current) => {
-      const harmonizedBillReferenceNo = current.harmonizedBillReferenceNo;
-      if (harmonizedBillReferenceNo !== null) {
-        if (!acc[harmonizedBillReferenceNo]) {
-          acc[harmonizedBillReferenceNo] = [current];
-        } else {
-          acc[harmonizedBillReferenceNo].push(current);
-        }
-      }
-      return acc;
-    }, {});
-
-    const nullBills = billset.filter(
-      (bill) => bill.harmonizedBillReferenceNo === null
-    );
-
-    console.log("Billing set-------------------", {
-      ...groupedBills,
-      nullBills,
-    });
-    setHarmonizedbills({ ...groupedBills, nullBills });
-
-    const newGroup = [];
-    Object.values(groupedBills).forEach((item) => {
-      newGroup.push(item[0]);
-    });
-    nullBills.forEach((item) => {
-      newGroup.push(item);
-    });
-    setGroup(newGroup);
-  };
-  useEffect(() => {
-    console.log("Billing set-------------------2", group);
-    setData(group);
-  }, [group]);
   const fetchData = (page) => {
     api
       .get(`billing/${organisationId}?pagenumber=${page}&PageSize=${perPage}`, {
@@ -462,8 +296,9 @@ const BillingList = () => {
         },
       })
       .then((response) => {
-        groupedBill(response.data);
+        console.log("response", response);
         setPending(false);
+        setData(response.data);
         var paginationData = response.headers["x-pagination"];
         const parsedPaginationData = JSON.parse(paginationData);
         setTotalRows(parsedPaginationData.TotalCount);
@@ -486,11 +321,14 @@ const BillingList = () => {
     setAgent(agents.id);
   };
   useEffect(() => {
+    // Fetch data from API and update state
     fetchData(1);
   }, []);
 
   const handlePageChange = (page) => {
     fetchData(page);
+    // const nextPage = currentPage + 1;
+    // setCurrentPage(nextPage)
   };
   const handlePerRowsChange = async (newPerPage, page) => {
     setPending(true);
@@ -503,9 +341,11 @@ const BillingList = () => {
         },
       }
     );
-    groupedBill(response.data);
+
+    setData(response.data);
     setPerPage(newPerPage);
     setPending(false);
+    // console.log("response--->",response.data[0].customers.customerId)
   };
 
   //api to all bills generated
@@ -712,11 +552,11 @@ const BillingList = () => {
           pagination
           paginationRowsPerPageOptions={customRowsPerPageOptions}
           progressPending={pending}
-          paginationResetDefaultPage={resetPaginationToggle}
+          paginationResetDefaultPage={resetPaginationToggle} // optionally, a hook to reset pagination to page 1
           subHeader
           subHeaderComponent={subHeaderComponentMemo}
           paginationServer
-          paginationTotalRows={totalRows}
+          paginationTotalRows={totalRows} // Replace with the total count of your data
           onChangePage={handlePageChange}
           onChangeRowsPerPage={handlePerRowsChange}
         />
@@ -729,43 +569,6 @@ const BillingList = () => {
       >
         Back
       </button>
-      <div
-        class="modal fade"
-        id="staticBackdrop2"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabindex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                {harminozedset?.harmonizedBillReferenceNo
-                  ? `Bills with harmonizedBillReferenceNo of  ${harminozedset.harmonizedBillReferenceNo}`
-                  : `Bills with billReferenceNo of  ${harminozedset.billReferenceNo}`}
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <DataTable
-                columns={columns2}
-                data={reversedFilteredViews}
-                pagination
-                subHeader
-                subHeaderComponent={subHeaderComponentMemo}
-                paginationServer
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div
         className="modal fade"

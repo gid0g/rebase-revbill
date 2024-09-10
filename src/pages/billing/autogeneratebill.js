@@ -62,7 +62,7 @@ const AutoGenerateBill = () => {
 
   const contextActions = React.useMemo(() => {
     const handleAutoGeneration = async () => {
-      console.log(createAutoBillDto);
+      console.log("autocreating---------------",createAutoBillDto);
       await api
         .post(
           `billing/${organisationId}/auto-billing`,

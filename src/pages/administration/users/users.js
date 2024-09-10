@@ -45,7 +45,7 @@ const Users = () => {
   const [roles, setRoles] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const modal = document.getElementById("modal24");
-  const [noUser, sucessUser]= useState("")
+  const [noUser, sucessUser] = useState("");
   const modalRef = useRef(null);
   // const [Variable, setVariable]=useState([])
   const options = [
@@ -228,7 +228,7 @@ const Users = () => {
     e.preventDefault();
     console.log("Selected Role ID:", selectedOptionId);
     setLoading(true);
-    console.log("organize",organisationId)
+    console.log("organize", organisationId);
     setIsRefreshing(true);
     await api
       .post(
@@ -268,9 +268,9 @@ const Users = () => {
 
           setTimeout(() => {
             console.log("1");
-            sucessUser("User Successfully Added")
-            modal.style.display = "block";      
-            modal.style.color="green"
+            sucessUser("User Successfully Added");
+            modal.style.display = "block";
+            modal.style.color = "green";
             modal.style.border = "2px solid black"; // Add a visible border
             setTimeout(() => {
               modal.style.display = "none";
@@ -311,9 +311,9 @@ const Users = () => {
 
           setTimeout(() => {
             console.log("2");
-            sucessUser("Failed To Add User")
+            sucessUser("Failed To Add User");
             modal.style.display = "block";
-            modal.style.color="red"
+            modal.style.color = "red";
             modal.style.border = "2px solid black"; // Add a visible border
             setTimeout(() => {
               modal.style.display = "none";
@@ -335,9 +335,9 @@ const Users = () => {
         setPending(false);
         setTimeout(() => {
           console.log("3");
-          sucessUser("Failed To Add User")
+          sucessUser("Failed To Add User");
           modal.style.display = "block";
-          modal.style.color="red"
+          modal.style.color = "red";
           modal.style.border = "2px solid black"; // Add a visible border
           setTimeout(() => {
             modal.style.display = "none";
@@ -495,28 +495,28 @@ const Users = () => {
           <div
             id="modal24"
             tabindex="-1"
-            class="modal"
+            className="modal"
             style={{ display: "none" }}
           >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">New User</h5>
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">New User</h5>
                   <button
                     type="button"
-                    class="btn-close"
+                    className="btn-close"
                     data-bs-dismiss="modal"
                     aria-label="Close"
                     onClick={Dissmiss}
                   ></button>
                 </div>
-                <div class="modal-body">
+                <div className="modal-body">
                   <p>{noUser}</p>
                 </div>
-                <div class="modal-footer">
+                <div className="modal-footer">
                   <button
                     type="button"
-                    class="btn btn-secondary"
+                    className="btn btn-secondary"
                     data-bs-dismiss="modal"
                     onClick={Dissmiss}
                   >

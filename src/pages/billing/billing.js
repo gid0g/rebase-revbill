@@ -691,7 +691,6 @@ const Billings = () => {
         },
       })
       .then((response) => {
-        // console.log("businessSize", response);
         setBusinessSize(response.data);
       })
       .catch((error) => {

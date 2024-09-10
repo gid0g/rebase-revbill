@@ -165,8 +165,8 @@ const Wards = () => {
           setTimeout(() => {
             authCloseModal("addWard");
             setNewWard("");
-            fetchWards();
-          }, 5000)
+          window.location.reload();
+          }, 2000)
         }
         return true;
       })
@@ -220,7 +220,7 @@ const Wards = () => {
           setTimeout(() => {
             authCloseModal("editWard");
             setNewWard("");
-            fetchWards();
+          window.location.reload();
           }, 2000)
         }
       })

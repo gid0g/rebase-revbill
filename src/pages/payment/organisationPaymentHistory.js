@@ -31,6 +31,7 @@ const OrganisationPaymentHistory = () => {
         },
       })
       .then((response) => {
+        console.log("Payments----------", response)
         setData(response.data.data);
         //  setTableLoading(false);
       })

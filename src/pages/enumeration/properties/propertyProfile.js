@@ -390,7 +390,7 @@ const PropertyProfile = () => {
 
   useEffect(() => {
     fetchFilterGroups();
-  });
+  },[]);
 
   return (
     <>

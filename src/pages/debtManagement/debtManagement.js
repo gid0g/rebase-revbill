@@ -451,7 +451,7 @@ useEffect(()=>{
     fetch(`/response.json?pagenumber=${page}&PageSize=${perPage}`)
     .then((response) => response.json())
     .then((jsonData) => {
-      console.log("JsonData---:", jsonData);
+      console.log("JsonData------------------------------------ 1:", jsonData);
       setData(jsonData);
     })
     .catch((error) => {
@@ -466,7 +466,7 @@ useEffect(()=>{
     fetch(`/response.json`)
       .then((response) => response.json())
       .then((jsonData) => {
-        console.log("JsonData---:", jsonData);
+        console.log("JsonData---------------------------------- 2:", jsonData);
         setData(jsonData);
       })
       .catch((error) => {

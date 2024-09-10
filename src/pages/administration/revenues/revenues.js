@@ -12,6 +12,7 @@ import { AppSettings } from "../../../config/app-settings";
 import "react-activity/dist/library.css";
 import { ToastContainer, toast } from "react-toastify";
 import { ro } from "date-fns/locale";
+import { Modal } from "bootstrap";
 
 const Revenues = () => {
   const token = sessionStorage.getItem("myToken");
@@ -46,7 +47,27 @@ const Revenues = () => {
   let navigate = useNavigate();
   const roleId = sessionStorage.getItem("roleId");
   // console.log("role",roleId)
+const [modalInstance, setModalInstance] = useState(null);
+ const authCloseModal = (elementId) => {
+   const myModal = new Modal(document.getElementById(elementId));
 
+   myModal.show();
+
+   myModal._element.addEventListener("shown.bs.modal", () => {
+     clearTimeout(myModal._element.hideInterval);
+     const id = setTimeout(() => {
+       myModal.hide();
+     });
+     myModal._element.hideInterval = id;
+
+     const backdropElement = document.querySelector(".modal-backdrop.show");
+     if (backdropElement) {
+       backdropElement.remove();
+     }
+   });
+
+   setModalInstance(myModal);
+ };
 
   function extractFirstThreeDigits(data) {
     const codes = data.map(obj => obj.agencyCode);
@@ -323,6 +344,10 @@ const Revenues = () => {
           setAgencies([]);
           setAgencyId(0);
           setBusinessType([]);
+           setTimeout(() => {
+             authCloseModal("addRevenue");
+             window.location.reload();
+           }, 2000);
         }
 
         if (response.data.status === 400) {
@@ -392,6 +417,10 @@ const Revenues = () => {
             theme: "colored",
           });
           setRevenueName("");
+           setTimeout(() => {
+             authCloseModal("editRevenue");
+             window.location.reload();
+           }, 2000);
         }
         setLoading(false);
       })

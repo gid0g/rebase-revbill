@@ -8,6 +8,7 @@ import { AppSettings } from "../../../config/app-settings";
 import "react-activity/dist/library.css";
 import { ToastContainer, toast } from "react-toastify";
 import Toast from 'react-bootstrap/Toast';
+import { Modal } from "bootstrap";
 
 
 const Agencies = () => {
@@ -31,6 +32,27 @@ const Agencies = () => {
 
   const [editRow, setEditRow] = useState(null);
   const [itemId, setItemId] = useState("");
+const [modalInstance, setModalInstance] = useState(null);
+const authCloseModal = (elementId) => {
+  const myModal = new Modal(document.getElementById(elementId));
+
+  myModal.show();
+
+  myModal._element.addEventListener("shown.bs.modal", () => {
+    clearTimeout(myModal._element.hideInterval);
+    const id = setTimeout(() => {
+      myModal.hide();
+    });
+    myModal._element.hideInterval = id;
+
+    const backdropElement = document.querySelector(".modal-backdrop.show");
+    if (backdropElement) {
+      backdropElement.remove();
+    }
+  });
+
+  setModalInstance(myModal);
+};
 
   //Define columns for the table
   const columns = [
@@ -148,6 +170,10 @@ const Agencies = () => {
             theme: "colored",
           });
           setNewAgency("");
+          setTimeout(() => {
+            authCloseModal("addAgency");
+            window.location.reload();
+          }, 2000);
         }
         setLoading(false);
         return true;
@@ -210,6 +236,10 @@ const Agencies = () => {
       )
     );
       setNewAgency("");
+      setTimeout(() => {
+        authCloseModal("editAgency");
+        window.location.reload();
+      }, 2000);
     }
     setLoading(false);
     return true;

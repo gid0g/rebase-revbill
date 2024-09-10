@@ -76,6 +76,7 @@ const Wards = () => {
 
   //get all payment methods for an organisation
   useEffect(() => {
+   
     api
       .get(`payment/${organisationId}/gateway`, {
         headers: {
@@ -83,6 +84,7 @@ const Wards = () => {
         },
       })
       .then((response) => {
+        console.log("Payment gate ways----------", response);
         setData(response.data);
         setIsOn(response.data.bankStatus || false);
       })
@@ -105,6 +107,7 @@ const Wards = () => {
       .then((response) => {
         if (response.status === 200) {
           if (response.data.status === 400) {
+            console.log("Report------------", response);
             setLoading(false);
             toast.error(response.data.statusMessage, {
               position: "top-right",
@@ -118,6 +121,7 @@ const Wards = () => {
             });
           } else {
             setLoading(false);
+            console.log("Report------------", response);
             toast.success(response.data.statusMessage, {
               position: "top-right",
               autoClose: 5000,
@@ -135,7 +139,7 @@ const Wards = () => {
       })
       .catch((error) => {
         setLoading(false);
-        console.log("error", error);
+        console.log("Report-------------------", error);
         toast.error(error.message, {
           position: "top-right",
           autoClose: 5000,

@@ -5,6 +5,7 @@ import DataTable from "react-data-table-component";
 import api from "../../../axios/custom";
 import { Spinner } from "react-activity";
 import { AppSettings } from "../../../config/app-settings";
+import { Modal } from "bootstrap";
 
 import "react-activity/dist/library.css";
 import { ToastContainer, toast } from "react-toastify";
@@ -22,6 +23,28 @@ const BusinessTypes = () => {
   const [editRow, setEditRow] = useState(null);
   const [itemId, setItemId] = useState("");
   const customRowsPerPageOptions = [5, 10, 20];
+  const [modalInstance, setModalInstance] = useState(null);
+const authCloseModal = (elementId) => {
+  const myModal = new Modal(document.getElementById(elementId));
+
+  myModal.show();
+
+  myModal._element.addEventListener("shown.bs.modal", () => {
+    clearTimeout(myModal._element.hideInterval);
+    const id = setTimeout(() => {
+      myModal.hide();
+    });
+    myModal._element.hideInterval = id;
+
+    const backdropElement = document.querySelector(".modal-backdrop.show");
+    if (backdropElement) {
+      backdropElement.remove();
+    }
+  });
+
+  setModalInstance(myModal);
+};
+
   const columns = [
     {
       name: "S/N",
@@ -110,6 +133,10 @@ const BusinessTypes = () => {
             theme: "colored",
           });
           setNewBusinessType("");
+          setTimeout(() => {
+            authCloseModal("addBusinessType");
+            window.location.reload();
+          }, 2000);
         }
         setLoading(false);
         return true;
@@ -181,6 +208,10 @@ const BusinessTypes = () => {
             theme: "colored",
           });
           setNewBusinessType("");
+          setTimeout(() => {
+            authCloseModal("editBusinessType");
+            window.location.reload();
+          }, 2000);
         }
         setLoading(false);
         // return true;
