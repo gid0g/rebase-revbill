@@ -39,22 +39,34 @@ const BillingList = () => {
  
   const adminplaceholder = [
     {
-      id: 63,
-      AdminName: "Ibukun Emmanuel",
+      id: "toluwalaseoludipe7@gmail.com",
+      AdminName: "Toluwalase Oludipe",
     },
     {
-      id: 64,
-      AdminName: "Ajayi David",
+      id: "iamtremor101@gmail.com",
+      AdminName: "Timothy Tremor",
     },
     {
-      id: 65,
-      AdminName: "Caleb Daniels",
+      id: "olasubomiesther14@gmail.com",
+      AdminName: "Abiola Olasubomi",
     },
     {
-      id: 72,
-      AdminName: "Aliko Dangote",
+      id: "gideonogordi@gmail.com",
+      AdminName: "Ogordi Gideon",
+    },
+    {
+      id: "gideonogordi@gmail.com",
+      AdminName: "Abayomi Richard",
+    },
+    {
+      id: "paogordi@gmail.com",
+      AdminName: "Oluwole Temiloluwa",
     },
   ];
+
+
+
+
 
   const transformedAgents = adminplaceholder
     ? adminplaceholder.map((item) => ({
