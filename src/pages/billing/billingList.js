@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../axios/custom";
 import { MyLoader } from "../../ui/contentLoader";
@@ -10,11 +10,14 @@ import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Select from "react-select";
 import { Modal } from "bootstrap";
+import { AppSettings } from "../../config/app-settings";
 
 const BillingList = () => {
   const navigate = useNavigate();
   const token = sessionStorage.getItem("myToken");
   const organisationId = sessionStorage.getItem("organisationId");
+  const appSettings = useContext(AppSettings);
+  const userData = appSettings.userData;
   const [data, setData] = useState([]);
   const [billsPerDay, setBillsPerDay] = useState("");
   const [billsPerWeek, setBillsPerWeek] = useState("");
@@ -30,13 +33,13 @@ const BillingList = () => {
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [deactivatedetails, setDeactivatedetails] = useState({});
-  const [agent, setAgent] = useState(null);
+  const [agent, setAgent] = useState("");
   const [modalInstance, setModalInstance] = useState(null);
   const [harminozedset, seHarmonizedset] = useState({});
   const [TobeView, setTobeView] = useState([]);
   const [group, setGroup] = useState([]);
   const [harmonizedbills, setHarmonizedbills] = useState({});
- 
+
   const adminplaceholder = [
     {
       id: "toluwalaseoludipe7@gmail.com",
@@ -64,10 +67,6 @@ const BillingList = () => {
     },
   ];
 
-
-
-
-
   const transformedAgents = adminplaceholder
     ? adminplaceholder.map((item) => ({
         label: item.AdminName,
@@ -75,12 +74,109 @@ const BillingList = () => {
       }))
     : "";
 
-  const requestApproval = (e) => {
-
-    const confirmation = window.confirm(
-      "Do you want to continue to generate bill?"
+  const requestApproval = async (e) => {
+    const confirmation = window.confirm("Do you want to deactivate bill?");
+    const payload = {
+      approvalBillStatusId: 6,
+      approver: agent,
+      dateModified: new Date().toISOString(),
+      modifiedBy: userData[0].email,
+    };
+    console.log(
+      "payload--------------",
+      payload,
+      `billing/${organisationId}/bill/${deactivatedetails?.billId}/initiatestepdown`
     );
     if (confirmation) {
+      await api
+        .post(
+          `billing/${organisationId}/bill/${deactivatedetails?.billId}/initiatestepdown`,
+          {
+            approvalBillStatusId: 6,
+            approver: agent,
+            dateModified: new Date().toISOString(),
+            modifiedBy: userData[0].email,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log("Response----------", response)
+          if (response.status == 200) {
+            if (response.statusMessage == "approver does not exists") {
+              toast.info("Approver does not exists", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+            } else {
+              toast.success(response.statusMessage, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+            }
+            return true;
+          }
+        })
+        .catch((error) => {
+          console.log("Error-----------", error)
+          if (error.response) {
+            if (error.response.status === 422) {
+              let errorMessages = [];
+              for (const response in error.response.data) {
+                error.response.data[response].forEach((errorMessage) => {
+                  errorMessages.push(errorMessage);
+                });
+              }
+              errorMessages.forEach((errorMessage) => {
+                toast.error(errorMessage, {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored",
+                });
+              });
+            }
+            toast.error(error.response.message, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          } else
+            toast.error(error.message, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+        });
     }
   };
 
@@ -495,7 +591,8 @@ const BillingList = () => {
       });
   };
   const handleAgentChange = (agents) => {
-    setAgent(agents.id);
+    console.log("new Agent", agents.value)
+    setAgent(agents.value);
   };
   useEffect(() => {
     fetchData(1);
@@ -951,7 +1048,7 @@ const BillingList = () => {
                 className="btn btn-primary"
                 onClick={() => requestApproval()}
               >
-                Understood
+                Initiate Stepdown 
               </button>
             </div>
           </div>
